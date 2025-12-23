@@ -1,0 +1,82 @@
+.geographic-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.selector-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.selector-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.selector-option {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  transition: all 0.2s;
+}
+
+.selector-option:hover {
+  background: #f8f9fa;
+  border-color: #ccc;
+}
+
+.selector-option.active {
+  background: #0066cc;
+  color: #fff;
+  border-color: #0066cc;
+  font-weight: 500;
+}
+
+.selector-option.active:hover {
+  background: #0052a3;
+  border-color: #0052a3;
+}
+
+.selector-select {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.selector-select:hover {
+  border-color: #ccc;
+}
+
+.selector-select:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.selector-note {
+  font-size: 0.75rem;
+  color: #666;
+  font-style: italic;
+  margin: 0;
+  margin-top: 0.25rem;
+}
+
