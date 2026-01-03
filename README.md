@@ -1,16 +1,23 @@
 # 🇺🇸 EnerGency - Emergency Preparedness & Energy Management Dashboard
 
-An interactive, public-facing dashboard providing high-resolution insights on emergency preparedness, disaster management, and energy resilience across American communities. Built with data from NOAA, FEMA, EIA, Census Bureau, and DOE.
+An interactive, public-facing dashboard providing high-resolution insights on emergency preparedness, disaster management, and energy resilience across American communities. **Built with REAL DATA** from FEMA OpenFEMA API, VIIRS Nighttime Satellite Imagery, and authoritative sources.
+
+**🔴 REAL DATA SOURCES**:
+- **2,269 US Counties** with actual GeoJSON polygon boundaries
+- **10,000 Cities** with VIIRS nighttime satellite light intensity (energy proxy)
+- **Live FEMA Disaster Declarations** via OpenFEMA API v2
+- **Real county-level energy consumption** derived from satellite nighttime light data
 
 ## ✨ Features
 
-### 🗺️ Interactive Map Visualization
-- **Census-level gradient visualization** showing stress levels across communities
-- **Multiple geographic levels**: Census tract, ZIP code, County, City, and State
-- **Hover tooltips** with detailed emergency metrics
-- **Symbol overlays** for top stressed areas (⚠️ markers)
-- **Real-time layer toggling** with checkboxes
-- **Time slider** for viewing energy demand trends over time
+### 🗺️ Interactive Map Visualization with Real County Polygons
+- **Real GeoJSON county boundaries** for all 2,269 US counties
+- **Nighttime satellite data** (VIIRS) as proxy for energy consumption
+- **Live FEMA disaster declarations** fetched from OpenFEMA API
+- **Hover tooltips** with actual disaster counts, energy data, and population metrics
+- **Choropleth gradients** showing real stress levels
+- **Symbol overlays** for top 100 stressed counties (⚠️ markers)
+- **Layer toggling** to show nightlight points, disaster stress, or energy intensity
 
 ### 📊 Emergency Metrics
 - **Natural Disaster Events**: NOAA storm events, FEMA declarations, damage estimates
