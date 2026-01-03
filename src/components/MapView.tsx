@@ -61,7 +61,7 @@ const MapView = ({ selectedIndicator, geoContext, mapBoundaries }: MapViewProps)
   }, [])
   
   // Generate GeoJSON from real data or fallback to mock
-  const geoJsonData = energyData.length > 0
+  const geoJsonData: any = energyData.length > 0
     ? convertToGeoJSON(energyData)
     : generateMockGeoJson(selectedIndicator, geoContext, mapBoundaries)
 

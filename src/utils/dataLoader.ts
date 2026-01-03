@@ -57,10 +57,9 @@ export function convertToGeoJSON(data: EnergyAccessMetrics[]): GeoJSON.FeatureCo
     features: data.map(metric => ({
       type: 'Feature',
       properties: {
-        tractId: metric.tractId,
+        ...metric,
         name: `${metric.county}, ${metric.state}`,
-        value: metric.overallScore,
-        ...metric
+        value: metric.overallScore
       },
       geometry: metric.bounds ? {
         type: 'Polygon',
