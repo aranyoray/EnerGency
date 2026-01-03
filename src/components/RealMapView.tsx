@@ -251,34 +251,60 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
         ))}
 
         {/* Render nightlight points */}
-        {showNightlightPoints && nightlightData.map((location, idx) => (
-          <CircleMarker
-            key={`nightlight-${idx}`}
-            center={[location.geometry.coordinates[1], location.geometry.coordinates[0]]}
-            radius={Math.max(2, location.properties.intensity * 8)}
-            pathOptions={{
-              fillColor: '#ffeb3b',
-              color: '#fdd835',
-              weight: 1,
-              fillOpacity: location.properties.intensity * 0.7
-            }}
-          >
-            <Tooltip>
-              <div>
-                <strong>{location.properties.name}, {location.properties.state}</strong><br />
-                Light Intensity: {(location.properties.intensity * 100).toFixed(1)}%<br />
-                Energy: {location.properties.energyMW.toFixed(0)} MW<br />
-                Population: {location.properties.population.toLocaleString()}
-              </div>
-            </Tooltip>
-          </CircleMarker>
-        ))}
+        {showNightlightPoints && nightlightData.map((location, idx) => {
+          const lat = location.geometry.coordinates[1]
+          const lon = location.geometry.coordinates[0]
+
+          // Validate coordinates
+          if (isNaN(lat) || isNaN(lon) || !isFinite(lat) || !isFinite(lon)) {
+            console.warn(`Invalid nightlight coordinates for ${location.properties.name}: [${lat}, ${lon}]`)
+            return null
+          }
+
+          return (
+            <CircleMarker
+              key={`nightlight-${idx}`}
+              center={[lat, lon]}
+              radius={Math.max(2, location.properties.intensity * 8)}
+              pathOptions={{
+                fillColor: '#ffeb3b',
+                color: '#fdd835',
+                weight: 1,
+                fillOpacity: location.properties.intensity * 0.7
+              }}
+            >
+              <Tooltip>
+                <div>
+                  <strong>{location.properties.name}, {location.properties.state}</strong><br />
+                  Light Intensity: {(location.properties.intensity * 100).toFixed(1)}%<br />
+                  Energy: {location.properties.energyMW.toFixed(0)} MW<br />
+                  Population: {location.properties.population.toLocaleString()}
+                </div>
+              </Tooltip>
+            </CircleMarker>
+          )
+        }).filter(Boolean)}
 
         {/* Render top stressed county markers */}
         {showTopStressed && topStressedCounties.map((county, idx) => {
+          // Get outer ring of polygon
           const coords = county.geometry.coordinates[0]
+
+          // Safety check for valid coordinates
+          if (!coords || coords.length === 0) {
+            console.warn(`Invalid coordinates for county ${county.properties.fips}`)
+            return null
+          }
+
+          // Calculate centroid
           const centerLon = coords.reduce((sum: number, c: number[]) => sum + c[0], 0) / coords.length
           const centerLat = coords.reduce((sum: number, c: number[]) => sum + c[1], 0) / coords.length
+
+          // Validate calculated center
+          if (isNaN(centerLat) || isNaN(centerLon)) {
+            console.warn(`Invalid center calculated for county ${county.properties.fips}: [${centerLat}, ${centerLon}]`)
+            return null
+          }
 
           return (
             <CircleMarker
@@ -303,7 +329,7 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
               </Popup>
             </CircleMarker>
           )
-        })}
+        }).filter(Boolean)}
       </MapContainer>
 
       <LayerControls
