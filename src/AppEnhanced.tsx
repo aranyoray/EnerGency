@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react'
-import EnhancedMapView from './components/EnhancedMapView'
+import RealMapView from './components/RealMapView'
 import './App.css'
 import './AppEnhanced.css'
 
@@ -123,7 +123,7 @@ function AppEnhanced() {
         </div>
 
         <div className="map-container">
-          <EnhancedMapView
+          <RealMapView
             geoLevel={geoLevel}
             selectedState={selectedState}
           />
