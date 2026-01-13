@@ -28,7 +28,7 @@ function AppEnhanced() {
         <div className="header-content">
           <h1>🇺🇸 EnerGency</h1>
           <p className="header-subtitle">
-            Emergency Preparedness & Energy Management Dashboard
+            American Energy Resilience & Community Readiness
           </p>
         </div>
         <div className="header-controls">
@@ -66,9 +66,9 @@ function AppEnhanced() {
           <div className="info-card">
             <h3>📊 About This Dashboard</h3>
             <p>
-              EnerGency provides comprehensive emergency preparedness metrics and energy
-              management insights for communities across America. Track natural disaster
-              risk, energy costs, population movements, and infrastructure resilience.
+              EnerGency delivers clear, accountable readiness insights for communities across
+              America. Measure disaster exposure, infrastructure strength, and energy
+              independence to support local decision-making and responsible stewardship.
             </p>
           </div>
 
@@ -76,10 +76,10 @@ function AppEnhanced() {
             <h3>📈 Available Metrics</h3>
             <ul className="metrics-list">
               <li><strong>Natural Disasters:</strong> Storm events, FEMA declarations, damage estimates</li>
-              <li><strong>Cooling & Heating Costs:</strong> Annual energy expenses by region</li>
-              <li><strong>Energy Burden:</strong> Percentage of income spent on energy</li>
-              <li><strong>Population Movement:</strong> Migration patterns and community stability</li>
-              <li><strong>Energy Demand:</strong> Grid load patterns over time</li>
+              <li><strong>Energy Independence:</strong> Local capacity, reliability, and demand load</li>
+              <li><strong>Household Burden:</strong> Share of income spent on power</li>
+              <li><strong>Community Stability:</strong> Migration trends and local retention</li>
+              <li><strong>Critical Infrastructure:</strong> Exposure for schools, hospitals, and services</li>
             </ul>
           </div>
 
@@ -89,25 +89,35 @@ function AppEnhanced() {
               <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
               <li>Hover over areas to see detailed metrics</li>
               <li>Use the <strong>time slider</strong> to view trends over time</li>
-              <li>⚠️ symbols indicate top stressed areas</li>
-              <li>Color intensity shows severity levels</li>
+              <li>⚠️ symbols mark priority attention areas</li>
+              <li>Color intensity shows readiness severity</li>
             </ul>
           </div>
 
           <div className="info-card stress-levels">
-            <h3>⚡ Stress Levels</h3>
-            <div className="stress-level" style={{ borderLeft: '4px solid #51cf66' }}>
-              <strong>Low:</strong> Minimal risk, stable conditions
+            <h3>⚡ Readiness Levels</h3>
+            <div className="stress-level" style={{ borderLeft: '4px solid #1d4ed8' }}>
+              <strong>Low:</strong> Strong readiness and stable conditions
             </div>
-            <div className="stress-level" style={{ borderLeft: '4px solid #ffd43b' }}>
-              <strong>Moderate:</strong> Some concerns, monitoring recommended
+            <div className="stress-level" style={{ borderLeft: '4px solid #0ea5e9' }}>
+              <strong>Moderate:</strong> Watch list, proactive planning advised
             </div>
-            <div className="stress-level" style={{ borderLeft: '4px solid #ff922b' }}>
-              <strong>High:</strong> Significant challenges, preparedness advised
+            <div className="stress-level" style={{ borderLeft: '4px solid #f97316' }}>
+              <strong>High:</strong> Elevated risk, readiness actions needed
             </div>
-            <div className="stress-level" style={{ borderLeft: '4px solid #e03131' }}>
-              <strong>Critical:</strong> Severe conditions, immediate attention needed
+            <div className="stress-level" style={{ borderLeft: '4px solid #b91c1c' }}>
+              <strong>Critical:</strong> Severe conditions, immediate action required
             </div>
+          </div>
+
+          <div className="info-card">
+            <h3>🏛️ Community Priorities</h3>
+            <ul className="sources-list">
+              <li>Support first responders and critical services readiness</li>
+              <li>Promote energy reliability and affordable household costs</li>
+              <li>Strengthen local decision-making and accountability</li>
+              <li>Protect families, farms, and small businesses</li>
+            </ul>
           </div>
 
           <div className="info-card">
@@ -132,7 +142,7 @@ function AppEnhanced() {
 
       <footer className="app-footer">
         <p>
-          Built with data from NOAA, FEMA, EIA, Census Bureau, and DOE |{' '}
+          Built with transparent public data for local leaders and community members |{' '}
           <a href="https://github.com" target="_blank" rel="noopener noreferrer">View on GitHub</a>
         </p>
       </footer>

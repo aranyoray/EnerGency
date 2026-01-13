@@ -1,8 +1,9 @@
 .app-header-enhanced {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 55%, #b91c1c 100%);
   color: white;
   padding: 20px 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+  border-bottom: 3px solid #ffffff;
 }
 
 .header-content {
@@ -19,7 +20,7 @@
 .header-subtitle {
   margin: 4px 0 0 0;
   font-size: 14px;
-  opacity: 0.95;
+  opacity: 0.96;
   font-weight: 500;
 }
 
@@ -42,7 +43,7 @@
 
 .select-control {
   background: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(15, 23, 42, 0.15);
   border-radius: 6px;
   padding: 6px 12px;
   font-size: 13px;
@@ -53,8 +54,8 @@
 
 .select-control:focus {
   outline: none;
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.25);
 }
 
 .app-content-enhanced {
@@ -64,7 +65,7 @@
 
 .info-panel {
   width: 320px;
-  background: #f8f9fa;
+  background: #f8fafc;
   border-right: 1px solid #e0e0e0;
   padding: 20px;
   overflow-y: auto;
@@ -75,14 +76,15 @@
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .info-card h3 {
   margin: 0 0 12px 0;
   font-size: 15px;
   font-weight: 700;
-  color: #1e3a8a;
+  color: #0f172a;
 }
 
 .info-card p {
@@ -110,13 +112,13 @@
 
 .metrics-list strong,
 .usage-list strong {
-  color: #1e3a8a;
+  color: #1d4ed8;
 }
 
 .stress-levels .stress-level {
   padding: 8px 12px;
   margin-bottom: 8px;
-  background: #f8f9fa;
+  background: #f1f5f9;
   border-radius: 4px;
   font-size: 13px;
   color: #555;
@@ -132,15 +134,16 @@
 }
 
 .app-footer {
-  background: #1e3a8a;
+  background: #0f172a;
   color: white;
   padding: 16px 30px;
   text-align: center;
   font-size: 12px;
+  border-top: 3px solid #b91c1c;
 }
 
 .app-footer a {
-  color: #93c5fd;
+  color: #bfdbfe;
   text-decoration: none;
 }
 
