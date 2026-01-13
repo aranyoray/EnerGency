@@ -14,6 +14,7 @@ import {
 } from '../services/realDataAggregator'
 import { NightlightFeature } from '../services/nightlightData'
 import LayerControls from './LayerControls'
+import TimeSlider from './TimeSlider'
 import './EnhancedMapView.css'
 import 'leaflet/dist/leaflet.css'
 
@@ -27,6 +28,8 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
   const [nightlightData, setNightlightData] = useState<NightlightFeature[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [currentDate, setCurrentDate] = useState(new Date(2024, 0, 1))
+  const [isPlaying, setIsPlaying] = useState(false)
 
   // Layer configurations
   const [layers, setLayers] = useState<MapLayerConfig[]>([
@@ -101,9 +104,15 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
 
   const handleLayerToggle = (layerId: string, enabled: boolean) => {
     setLayers(prevLayers =>
-      prevLayers.map(layer =>
-        layer.id === layerId ? { ...layer, enabled } : layer
-      )
+      prevLayers.map(layer => {
+        if (layer.id === layerId) {
+          return { ...layer, enabled }
+        }
+        if (enabled && layer.type === 'choropleth' && layer.id !== layerId) {
+          return { ...layer, enabled: false }
+        }
+        return layer
+      })
     )
   }
 
@@ -111,6 +120,34 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
   const activeChoroplethLayer = layers.find(l => l.enabled && l.type === 'choropleth')
   const showNightlightPoints = layers.find(l => l.id === 'nightlight-points')?.enabled
   const showTopStressed = layers.find(l => l.id === 'top-stressed')?.enabled
+  const showEnergyReliability = layers.find(l => l.id === 'energy-reliability')?.enabled
+  const showRecoveryNeeds = layers.find(l => l.id === 'recovery-needs')?.enabled
+  const showInfrastructurePriority = layers.find(l => l.id === 'infrastructure-priority')?.enabled
+  const showForecastHotspots = layers.find(l => l.id === 'forecast-pressure')?.enabled
+
+  const clampScore = (value: number) => Math.max(0, Math.min(100, value))
+
+  const getSeasonalAdjustment = (date: Date) => {
+    const month = date.getMonth()
+    if (month >= 5 && month <= 9) return 12
+    if (month === 11 || month <= 1) return 9
+    return 5
+  }
+
+  const getForecastScore = (county: EnrichedCountyData) => {
+    const base = county.emergencyMetrics.overallStressScore
+    const seasonal = getSeasonalAdjustment(currentDate)
+    const trend = (currentDate.getFullYear() - 2020) * 1.5
+    const disasterMomentum = Math.min(county.emergencyMetrics.disasterCount * 0.8, 10)
+    return clampScore(base + seasonal + trend + disasterMomentum)
+  }
+
+  const getForecastLevel = (score: number) => {
+    if (score >= 75) return 'Critical'
+    if (score >= 50) return 'High'
+    if (score >= 25) return 'Moderate'
+    return 'Low'
+  }
 
   // Get color for choropleth based on value
   const getColor = (value: number): string => {
@@ -149,10 +186,12 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
       value = county.emergencyMetrics.overallStressScore
     } else if (activeChoroplethLayer.id === 'disaster-stress') {
       value = county.emergencyMetrics.disasterStressScore
+    } else if (activeChoroplethLayer.id === 'forecast-pressure') {
+      value = getForecastScore(county)
     }
 
     return {
-      fillColor: getColor(value),
+      fillColor: getColor(value, activeChoroplethLayer.id),
       weight: 1,
       opacity: 1,
       color: '#ffffff',
@@ -167,6 +206,8 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
 
     const props = county.properties
     const metrics = county.emergencyMetrics
+    const forecastScore = getForecastScore(county)
+    const forecastLevel = getForecastLevel(forecastScore)
 
     const tooltipContent = (
       <div className="metric-tooltip">
@@ -175,6 +216,12 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
           <h4>Emergency Preparedness Metrics</h4>
           <p><strong>Stress Level:</strong> {metrics.stressLevel}</p>
           <p><strong>Overall Score:</strong> {metrics.overallStressScore.toFixed(1)}/100</p>
+        </div>
+        <div className="metric-section">
+          <h4>AI Outlook ({currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})</h4>
+          <p><strong>Forecast Score:</strong> {forecastScore.toFixed(1)}/100</p>
+          <p><strong>Forecast Level:</strong> {forecastLevel}</p>
+          <p><strong>Drivers:</strong> seasonal demand, recent disaster momentum, baseline readiness</p>
         </div>
         <div className="metric-section">
           <h4>Natural Disasters</h4>
@@ -201,6 +248,29 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
 
   // Top stressed counties
   const topStressedCounties = showTopStressed ? getTopStressedCounties(counties, 100) : []
+  const energyReliabilityCounties = showEnergyReliability
+    ? counties.filter(county => county.emergencyMetrics.energyStressScore >= 60)
+    : []
+  const recoveryNeedCounties = showRecoveryNeeds
+    ? counties.filter(county => county.emergencyMetrics.disasterStressScore >= 60)
+    : []
+  const infrastructurePriorityCounties = showInfrastructurePriority
+    ? counties.filter(county =>
+        county.emergencyMetrics.overallStressScore >= 70 || county.properties.totalPopulation >= 500000
+      )
+    : []
+  const forecastHotspotCounties = showForecastHotspots
+    ? counties.filter(county => getForecastScore(county) >= 75)
+    : []
+
+  const getCountyCentroid = (county: EnrichedCountyData) => {
+    const coords = county.geometry.coordinates[0]
+    if (!coords || coords.length === 0) return null
+    const centerLon = coords.reduce((sum: number, c: number[]) => sum + c[0], 0) / coords.length
+    const centerLat = coords.reduce((sum: number, c: number[]) => sum + c[1], 0) / coords.length
+    if (isNaN(centerLat) || isNaN(centerLon)) return null
+    return [centerLat, centerLon] as [number, number]
+  }
 
   if (error) {
     return (
@@ -286,29 +356,13 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
 
         {/* Render top stressed county markers */}
         {showTopStressed && topStressedCounties.map((county, idx) => {
-          // Get outer ring of polygon
-          const coords = county.geometry.coordinates[0]
-
-          // Safety check for valid coordinates
-          if (!coords || coords.length === 0) {
-            console.warn(`Invalid coordinates for county ${county.properties.fips}`)
-            return null
-          }
-
-          // Calculate centroid
-          const centerLon = coords.reduce((sum: number, c: number[]) => sum + c[0], 0) / coords.length
-          const centerLat = coords.reduce((sum: number, c: number[]) => sum + c[1], 0) / coords.length
-
-          // Validate calculated center
-          if (isNaN(centerLat) || isNaN(centerLon)) {
-            console.warn(`Invalid center calculated for county ${county.properties.fips}: [${centerLat}, ${centerLon}]`)
-            return null
-          }
+          const center = getCountyCentroid(county)
+          if (!center) return null
 
           return (
             <CircleMarker
               key={`stressed-${county.properties.fips}-${idx}`}
-              center={[centerLat, centerLon]}
+              center={center}
               radius={8}
               pathOptions={{
                 fillColor: '#b91c1c',
@@ -329,11 +383,138 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
             </CircleMarker>
           )
         }).filter(Boolean)}
+
+        {/* Energy reliability watchlist */}
+        {showEnergyReliability && energyReliabilityCounties.map((county, idx) => {
+          const center = getCountyCentroid(county)
+          if (!center) return null
+
+          return (
+            <CircleMarker
+              key={`reliability-${county.properties.fips}-${idx}`}
+              center={center}
+              radius={6}
+              pathOptions={{
+                fillColor: '#2563eb',
+                color: '#1d4ed8',
+                weight: 2,
+                fillOpacity: 0.8
+              }}
+            >
+              <Popup>
+                <div className="stress-popup">
+                  <h3>⚡ Energy Reliability Watchlist</h3>
+                  <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
+                  <p>Energy Stress: {county.emergencyMetrics.energyStressScore.toFixed(1)}/100</p>
+                  <p>Demand Load: {county.properties.totalEnergyMW.toFixed(0)} MW</p>
+                </div>
+              </Popup>
+            </CircleMarker>
+          )
+        }).filter(Boolean)}
+
+        {/* Disaster recovery needs */}
+        {showRecoveryNeeds && recoveryNeedCounties.map((county, idx) => {
+          const center = getCountyCentroid(county)
+          if (!center) return null
+
+          return (
+            <CircleMarker
+              key={`recovery-${county.properties.fips}-${idx}`}
+              center={center}
+              radius={6}
+              pathOptions={{
+                fillColor: '#f97316',
+                color: '#c2410c',
+                weight: 2,
+                fillOpacity: 0.8
+              }}
+            >
+              <Popup>
+                <div className="stress-popup">
+                  <h3>🛠️ Disaster Recovery Needs</h3>
+                  <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
+                  <p>Disaster Stress: {county.emergencyMetrics.disasterStressScore.toFixed(1)}/100</p>
+                  <p>Recent Declarations: {county.emergencyMetrics.disasterCount}</p>
+                </div>
+              </Popup>
+            </CircleMarker>
+          )
+        }).filter(Boolean)}
+
+        {/* Critical infrastructure safeguard */}
+        {showInfrastructurePriority && infrastructurePriorityCounties.map((county, idx) => {
+          const center = getCountyCentroid(county)
+          if (!center) return null
+
+          return (
+            <CircleMarker
+              key={`infrastructure-${county.properties.fips}-${idx}`}
+              center={center}
+              radius={6}
+              pathOptions={{
+                fillColor: '#7c3aed',
+                color: '#5b21b6',
+                weight: 2,
+                fillOpacity: 0.8
+              }}
+            >
+              <Popup>
+                <div className="stress-popup">
+                  <h3>🏥 Critical Infrastructure Safeguard</h3>
+                  <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
+                  <p>Population: {county.properties.totalPopulation.toLocaleString()}</p>
+                  <p>Readiness Score: {county.emergencyMetrics.overallStressScore.toFixed(1)}/100</p>
+                </div>
+              </Popup>
+            </CircleMarker>
+          )
+        }).filter(Boolean)}
+
+        {/* AI forecast hotspots */}
+        {showForecastHotspots && forecastHotspotCounties.map((county, idx) => {
+          const center = getCountyCentroid(county)
+          if (!center) return null
+
+          const forecastScore = getForecastScore(county)
+          return (
+            <CircleMarker
+              key={`forecast-${county.properties.fips}-${idx}`}
+              center={center}
+              radius={9}
+              pathOptions={{
+                fillColor: '#1d4ed8',
+                color: '#0f172a',
+                weight: 2,
+                fillOpacity: 0.85
+              }}
+            >
+              <Popup>
+                <div className="stress-popup">
+                  <h3>🔮 AI Forecast Hotspot</h3>
+                  <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
+                  <p>Forecast Score: {forecastScore.toFixed(1)}/100</p>
+                  <p>Forecast Level: {getForecastLevel(forecastScore)}</p>
+                </div>
+              </Popup>
+            </CircleMarker>
+          )
+        }).filter(Boolean)}
       </MapContainer>
 
       <LayerControls
         layers={layers}
         onLayerToggle={handleLayerToggle}
+      />
+
+      <TimeSlider
+        minDate={new Date(2020, 0, 1)}
+        maxDate={new Date(2024, 11, 31)}
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
+        isPlaying={isPlaying}
+        onPlayToggle={setIsPlaying}
+        stepSize="month"
       />
 
       {/* Legend */}
@@ -342,7 +523,7 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
           <div className="legend-title">{activeChoroplethLayer.name}</div>
           <div className="legend-gradient">
             <div className="legend-gradient-bar" style={{
-              background: `linear-gradient(to right, ${getColor(0)}, ${getColor(50)}, ${getColor(100)})`
+              background: `linear-gradient(to right, ${getColor(0, activeChoroplethLayer.id)}, ${getColor(50, activeChoroplethLayer.id)}, ${getColor(100, activeChoroplethLayer.id)})`
             }} />
             <div className="legend-gradient-labels">
               <span>Low</span>
@@ -351,6 +532,9 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
             </div>
           </div>
           <div style={{ fontSize: '11px', marginTop: '8px', color: '#666' }}>
+            <strong>Forecast Date:</strong> {currentDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+          </div>
+          <div style={{ fontSize: '11px', marginTop: '6px', color: '#666' }}>
             <strong>Data Sources:</strong> FEMA OpenFEMA API, VIIRS Nighttime Satellite Data
           </div>
         </div>
