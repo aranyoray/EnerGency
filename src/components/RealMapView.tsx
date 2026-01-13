@@ -42,47 +42,12 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
       color: '#b91c1c'
     },
     {
-      id: 'forecast-pressure',
-      name: 'AI Forecast (12-Month Outlook)',
-      enabled: false,
-      type: 'choropleth',
-      dataKey: 'overallStressScore',
-      color: '#1d4ed8'
-    },
-    {
       id: 'disaster-stress',
       name: 'Disaster Exposure Level',
       enabled: false,
       type: 'choropleth',
       dataKey: 'disasterStressScore',
       color: '#f97316'
-    },
-    {
-      id: 'energy-reliability',
-      name: 'Energy Reliability Watchlist',
-      enabled: false,
-      type: 'symbols',
-      dataKey: 'energyStressScore',
-      color: '#2563eb',
-      icon: '⚡'
-    },
-    {
-      id: 'recovery-needs',
-      name: 'Disaster Recovery Needs',
-      enabled: false,
-      type: 'symbols',
-      dataKey: 'disasterStressScore',
-      color: '#f97316',
-      icon: '🛠️'
-    },
-    {
-      id: 'infrastructure-priority',
-      name: 'Critical Infrastructure Safeguards',
-      enabled: false,
-      type: 'symbols',
-      dataKey: 'overallStressScore',
-      color: '#7c3aed',
-      icon: '🏥'
     },
     {
       id: 'nightlight-points',
@@ -185,15 +150,7 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
   }
 
   // Get color for choropleth based on value
-  const getColor = (value: number, layerId?: string): string => {
-    if (layerId === 'forecast-pressure') {
-      if (value >= 80) return '#1e3a8a'
-      if (value >= 60) return '#1d4ed8'
-      if (value >= 40) return '#3b82f6'
-      if (value >= 20) return '#93c5fd'
-      return '#dbeafe'
-    }
-
+  const getColor = (value: number): string => {
     if (value >= 80) return '#991b1b'
     if (value >= 60) return '#dc2626'
     if (value >= 40) return '#f97316'

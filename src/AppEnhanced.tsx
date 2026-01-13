@@ -88,8 +88,7 @@ function AppEnhanced() {
             <ul className="usage-list">
               <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
               <li>Hover over areas to see detailed metrics</li>
-              <li>Use the <strong>time slider</strong> to view forecast windows</li>
-              <li>Enable <strong>AI Forecast</strong> layers for 12-month outlooks</li>
+              <li>Use the <strong>time slider</strong> to view trends over time</li>
               <li>⚠️ symbols mark priority attention areas</li>
               <li>Color intensity shows readiness severity</li>
             </ul>
@@ -118,16 +117,6 @@ function AppEnhanced() {
               <li>Promote energy reliability and affordable household costs</li>
               <li>Strengthen local decision-making and accountability</li>
               <li>Protect families, farms, and small businesses</li>
-            </ul>
-          </div>
-
-          <div className="info-card">
-            <h3>🤖 AI Forecast & Scenario Planning</h3>
-            <ul className="sources-list">
-              <li>Use the forecast slider to simulate seasonal demand shifts</li>
-              <li>Highlight AI forecast hotspots for proactive response</li>
-              <li>Compare disaster exposure against projected stress levels</li>
-              <li>Align mitigation plans with predicted risk windows</li>
             </ul>
           </div>
 
