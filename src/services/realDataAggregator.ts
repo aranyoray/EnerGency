@@ -11,7 +11,6 @@ import {
   CountyEnergyFeature
 } from './nightlightData'
 import {
-  fetchFEMADisasters,
   fetchRecentDisasters,
   groupDisastersByCounty,
   FEMADisasterDeclaration
@@ -42,8 +41,6 @@ export async function loadAllRealData(options: {
   disasters: FEMADisasterDeclaration[]
   enrichedCounties: EnrichedCountyData[]
 }> {
-  console.log('Loading real data sources...')
-
   try {
     // Load all data in parallel
     const [nightlight, counties, disasters] = await Promise.all([
@@ -51,11 +48,6 @@ export async function loadAllRealData(options: {
       loadCountyEnergyData(),
       fetchRecentDisasters(options.disasterYears || 5)
     ])
-
-    console.log(`Loaded:
-      - ${nightlight.features.length} nightlight locations
-      - ${counties.features.length} counties
-      - ${disasters.length} FEMA disaster declarations`)
 
     // Enrich county data with disaster information
     const enrichedCounties = enrichCountiesWithDisasters(counties, disasters)
@@ -67,7 +59,6 @@ export async function loadAllRealData(options: {
       enrichedCounties
     }
   } catch (error) {
-    console.error('Error loading real data:', error)
     throw error
   }
 }
@@ -219,6 +210,24 @@ export function getCountiesByStressLevel(
  * Calculate summary statistics
  */
 export function calculateSummaryStats(counties: EnrichedCountyData[]) {
+  if (counties.length === 0) {
+    return {
+      totalCounties: 0,
+      totalPopulation: 0,
+      totalEnergyMW: 0,
+      avgEnergyPerCounty: 0,
+      totalDisasters: 0,
+      avgDisastersPerCounty: 0,
+      stressLevels: {
+        Low: 0,
+        Moderate: 0,
+        High: 0,
+        Critical: 0
+      },
+      avgOverallStress: 0
+    }
+  }
+
   const totalPopulation = counties.reduce((sum, c) => sum + c.properties.totalPopulation, 0)
   const totalEnergy = counties.reduce((sum, c) => sum + c.properties.totalEnergyMW, 0)
   const totalDisasters = counties.reduce((sum, c) => sum + c.emergencyMetrics.disasterCount, 0)

@@ -32,35 +32,35 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
   const [layers, setLayers] = useState<MapLayerConfig[]>([
     {
       id: 'county-choropleth',
-      name: 'County Energy Intensity',
+      name: 'County Readiness Pressure',
       enabled: true,
       type: 'choropleth',
       dataKey: 'overallStressScore',
-      color: '#ff6b6b'
+      color: '#b91c1c'
     },
     {
       id: 'disaster-stress',
-      name: 'Disaster Stress Level',
+      name: 'Disaster Exposure Level',
       enabled: false,
       type: 'choropleth',
       dataKey: 'disasterStressScore',
-      color: '#ff922b'
+      color: '#f97316'
     },
     {
       id: 'nightlight-points',
-      name: 'Nighttime Light Intensity',
+      name: 'Local Energy Activity',
       enabled: false,
       type: 'symbols',
       dataKey: 'isTopStressed',
-      color: '#ffeb3b'
+      color: '#38bdf8'
     },
     {
       id: 'top-stressed',
-      name: 'Top Stressed Counties (⚠️)',
+      name: 'Priority Action Counties (⚠️)',
       enabled: true,
       type: 'symbols',
       dataKey: 'isTopStressed',
-      color: '#e03131',
+      color: '#b91c1c',
       icon: '⚠️'
     }
   ])
@@ -72,16 +72,9 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
         setLoading(true)
         setError(null)
 
-        console.log('Loading real data...')
         const data = await loadAllRealData({
           state: selectedState,
           disasterYears: 5
-        })
-
-        console.log('Data loaded:', {
-          counties: data.enrichedCounties.length,
-          nightlight: data.nightlight.features.length,
-          disasters: data.disasters.length
         })
 
         // Filter by state if selected
@@ -121,11 +114,11 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
 
   // Get color for choropleth based on value
   const getColor = (value: number): string => {
-    if (value >= 80) return '#c92a2a'
-    if (value >= 60) return '#f03e3e'
-    if (value >= 40) return '#ff6b6b'
-    if (value >= 20) return '#ffa8a8'
-    return '#ffe8e8'
+    if (value >= 80) return '#991b1b'
+    if (value >= 60) return '#dc2626'
+    if (value >= 40) return '#f97316'
+    if (value >= 20) return '#93c5fd'
+    return '#1d4ed8'
   }
 
   // Style function for county GeoJSON
@@ -225,7 +218,13 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
     <div className="enhanced-map-view">
       {loading && (
         <div className="loading-overlay">
-          <div className="loading-spinner">Loading real data from NOAA, FEMA, and satellite sources...</div>
+          <div className="loading-spinner">Loading verified public data from NOAA, FEMA, and satellite sources...</div>
+        </div>
+      )}
+
+      {!loading && counties.length === 0 && (
+        <div className="loading-overlay">
+          <div className="loading-spinner">No counties match the current filters. Try another state.</div>
         </div>
       )}
 
@@ -267,8 +266,8 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
               center={[lat, lon]}
               radius={Math.max(2, location.properties.intensity * 8)}
               pathOptions={{
-                fillColor: '#ffeb3b',
-                color: '#fdd835',
+                fillColor: '#38bdf8',
+                color: '#0ea5e9',
                 weight: 1,
                 fillOpacity: location.properties.intensity * 0.7
               }}
@@ -312,8 +311,8 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
               center={[centerLat, centerLon]}
               radius={8}
               pathOptions={{
-                fillColor: '#e03131',
-                color: '#c92a2a',
+                fillColor: '#b91c1c',
+                color: '#7f1d1d',
                 weight: 2,
                 fillOpacity: 0.9
               }}
