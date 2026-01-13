@@ -5,11 +5,12 @@
   transform: translateX(-50%);
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.2);
   padding: 16px 20px;
   z-index: 1000;
   min-width: 400px;
   max-width: 600px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
 }
 
 .time-slider-header {
@@ -20,7 +21,7 @@
 }
 
 .play-button {
-  background: #0066cc;
+  background: #1d4ed8;
   color: white;
   border: none;
   border-radius: 50%;
@@ -35,7 +36,7 @@
 }
 
 .play-button:hover {
-  background: #0052a3;
+  background: #1e40af;
 }
 
 .time-display {
@@ -66,27 +67,27 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #0066cc;
+  background: #1d4ed8;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .slider::-webkit-slider-thumb:hover {
-  background: #0052a3;
+  background: #1e40af;
 }
 
 .slider::-moz-range-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #0066cc;
+  background: #1d4ed8;
   cursor: pointer;
   border: none;
   transition: background-color 0.2s;
 }
 
 .slider::-moz-range-thumb:hover {
-  background: #0052a3;
+  background: #1e40af;
 }
 
 .slider-labels {
