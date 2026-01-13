@@ -241,8 +241,14 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
       </div>
     )
 
+    layer.on({
+      click: () => {
+        setSelectedCounty(county)
+      }
+    })
     layer.bindTooltip(tooltipContent, {
-      sticky: true
+      sticky: true,
+      opacity: 0.9
     })
   }
 

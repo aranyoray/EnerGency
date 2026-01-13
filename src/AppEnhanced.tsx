@@ -64,6 +64,13 @@ function AppEnhanced() {
       <div className="app-content-enhanced">
         <div className="info-panel">
           <div className="info-card">
+            <h3>👤 Project Lead</h3>
+            <p>
+              Ekaansh Ravuri, 15 | Chicago, IL
+            </p>
+          </div>
+
+          <div className="info-card">
             <h3>📊 About This Dashboard</h3>
             <p>
               EnerGency delivers clear, accountable readiness insights for communities across
@@ -81,6 +88,15 @@ function AppEnhanced() {
               <li><strong>Community Stability:</strong> Migration trends and local retention</li>
               <li><strong>Critical Infrastructure:</strong> Exposure for schools, hospitals, and services</li>
             </ul>
+          </div>
+
+          <div className="info-card">
+            <h3>🧭 Problem Statement</h3>
+            <p>
+              Extreme weather and rapid population shifts create localized demand spikes that
+              overwhelm a grid built for more predictable patterns. Without early forecasting,
+              communities face blackouts, delayed response, and costly recoveries.
+            </p>
           </div>
 
           <div className="info-card">

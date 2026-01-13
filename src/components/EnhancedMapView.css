@@ -145,6 +145,12 @@
     min-width: 150px;
   }
 
+  .map-sidebar {
+    position: static;
+    width: auto;
+    margin: 12px;
+  }
+
   .metric-tooltip h3 {
     font-size: 14px;
   }
