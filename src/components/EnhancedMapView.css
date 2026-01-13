@@ -92,67 +92,6 @@
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.map-sidebar {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 320px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
-  z-index: 1100;
-  padding: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-}
-
-.map-sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.map-sidebar-header h3 {
-  margin: 0 0 6px 0;
-  font-size: 16px;
-  color: #0f172a;
-}
-
-.map-sidebar-header p {
-  margin: 0;
-  font-size: 12px;
-  color: #64748b;
-}
-
-.map-sidebar-close {
-  background: #e2e8f0;
-  border: none;
-  color: #0f172a;
-  border-radius: 6px;
-  padding: 4px 8px;
-  cursor: pointer;
-  height: 28px;
-}
-
-.map-sidebar-section {
-  margin-bottom: 12px;
-}
-
-.map-sidebar-section h4 {
-  margin: 0 0 6px 0;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: #1d4ed8;
-}
-
-.map-sidebar-section p {
-  margin: 4px 0;
-  font-size: 13px;
-  color: #334155;
-  line-height: 1.4;
-}
-
 .legend-title {
   font-size: 13px;
   font-weight: 600;

@@ -28,7 +28,6 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
   const [nightlightData, setNightlightData] = useState<NightlightFeature[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedCounty, setSelectedCounty] = useState<EnrichedCountyData | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date(2024, 0, 1))
   const [isPlaying, setIsPlaying] = useState(false)
 
@@ -43,74 +42,12 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
       color: '#b91c1c'
     },
     {
-      id: 'forecast-pressure',
-      name: 'AI Forecast (12-Month Outlook)',
-      enabled: false,
-      type: 'choropleth',
-      dataKey: 'overallStressScore',
-      color: '#1d4ed8'
-    },
-    {
       id: 'disaster-stress',
       name: 'Disaster Exposure Level',
       enabled: false,
       type: 'choropleth',
       dataKey: 'disasterStressScore',
       color: '#f97316'
-    },
-    {
-      id: 'energy-reliability',
-      name: 'Energy Reliability Watchlist',
-      enabled: false,
-      type: 'symbols',
-      dataKey: 'energyStressScore',
-      color: '#2563eb',
-      icon: '⚡'
-    },
-    {
-      id: 'recovery-needs',
-      name: 'Disaster Recovery Needs',
-      enabled: false,
-      type: 'symbols',
-      dataKey: 'disasterStressScore',
-      color: '#f97316',
-      icon: '🛠️'
-    },
-    {
-      id: 'infrastructure-priority',
-      name: 'Critical Infrastructure Safeguards',
-      enabled: false,
-      type: 'symbols',
-      dataKey: 'overallStressScore',
-      color: '#7c3aed',
-      icon: '🏥'
-    },
-    {
-      id: 'dynamic-pricing',
-      name: 'AI-driven Pricing for Consumers',
-      enabled: false,
-      type: 'symbols',
-      dataKey: 'overallStressScore',
-      color: '#16a34a',
-      icon: '💵'
-    },
-    {
-      id: 'new-projects',
-      name: 'New Energy Projects (⚡)',
-      enabled: false,
-      type: 'symbols',
-      dataKey: 'overallStressScore',
-      color: '#facc15',
-      icon: '⚡'
-    },
-    {
-      id: 'storage-sites',
-      name: 'Energy Storage Sites (🔋)',
-      enabled: false,
-      type: 'symbols',
-      dataKey: 'overallStressScore',
-      color: '#22c55e',
-      icon: '🔋'
     },
     {
       id: 'nightlight-points',
@@ -187,9 +124,6 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
   const showRecoveryNeeds = layers.find(l => l.id === 'recovery-needs')?.enabled
   const showInfrastructurePriority = layers.find(l => l.id === 'infrastructure-priority')?.enabled
   const showForecastHotspots = layers.find(l => l.id === 'forecast-pressure')?.enabled
-  const showDynamicPricing = layers.find(l => l.id === 'dynamic-pricing')?.enabled
-  const showNewProjects = layers.find(l => l.id === 'new-projects')?.enabled
-  const showStorageSites = layers.find(l => l.id === 'storage-sites')?.enabled
 
   const clampScore = (value: number) => Math.max(0, Math.min(100, value))
 
@@ -215,18 +149,8 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
     return 'Low'
   }
 
-  const activeLayerId = activeChoroplethLayer?.id
-
   // Get color for choropleth based on value
   const getColor = (value: number): string => {
-    if (activeLayerId === 'forecast-pressure') {
-      if (value >= 80) return '#1e3a8a'
-      if (value >= 60) return '#1d4ed8'
-      if (value >= 40) return '#3b82f6'
-      if (value >= 20) return '#93c5fd'
-      return '#dbeafe'
-    }
-
     if (value >= 80) return '#991b1b'
     if (value >= 60) return '#dc2626'
     if (value >= 40) return '#f97316'
@@ -267,7 +191,7 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
     }
 
     return {
-      fillColor: getColor(value),
+      fillColor: getColor(value, activeChoroplethLayer.id),
       weight: 1,
       opacity: 1,
       color: '#ffffff',
@@ -343,19 +267,6 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
     : []
   const forecastHotspotCounties = showForecastHotspots
     ? counties.filter(county => getForecastScore(county) >= 75)
-    : []
-  const dynamicPricingCounties = showDynamicPricing
-    ? counties.filter(county => getForecastScore(county) >= 50)
-    : []
-  const newProjectCounties = showNewProjects
-    ? counties.filter(county =>
-        getForecastScore(county) >= 70 || county.emergencyMetrics.energyStressScore >= 65
-      )
-    : []
-  const storageSiteCounties = showStorageSites
-    ? counties.filter(county =>
-        getForecastScore(county) >= 60 || county.emergencyMetrics.disasterStressScore >= 65
-      )
     : []
 
   const getCountyCentroid = (county: EnrichedCountyData) => {
@@ -473,98 +384,6 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
                   <p>Stress Level: {county.emergencyMetrics.stressLevel}</p>
                   <p>Score: {county.emergencyMetrics.overallStressScore.toFixed(1)}/100</p>
                   <p>Disasters: {county.emergencyMetrics.disasterCount}</p>
-                </div>
-              </Popup>
-            </CircleMarker>
-          )
-        }).filter(Boolean)}
-
-        {/* Dynamic pricing signals */}
-        {showDynamicPricing && dynamicPricingCounties.map((county, idx) => {
-          const center = getCountyCentroid(county)
-          if (!center) return null
-
-          const forecastScore = getForecastScore(county)
-          return (
-            <CircleMarker
-              key={`pricing-${county.properties.fips}-${idx}`}
-              center={center}
-              radius={7}
-              pathOptions={{
-                fillColor: '#16a34a',
-                color: '#166534',
-                weight: 2,
-                fillOpacity: 0.85
-              }}
-            >
-              <Popup>
-                <div className="stress-popup">
-                  <h3>💵 AI-driven Pricing for Consumers</h3>
-                  <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
-                  <p>Forecast Score: {forecastScore.toFixed(1)}/100</p>
-                  <p>Recommendation: {forecastScore >= 75 ? 'Surge +20%' : forecastScore >= 60 ? 'Peak +12%' : 'Flex +6%'}</p>
-                  <p>Purpose: reduce peak demand ahead of forecast stress windows.</p>
-                </div>
-              </Popup>
-            </CircleMarker>
-          )
-        }).filter(Boolean)}
-
-        {/* New energy project recommendations */}
-        {showNewProjects && newProjectCounties.map((county, idx) => {
-          const center = getCountyCentroid(county)
-          if (!center) return null
-
-          const forecastScore = getForecastScore(county)
-          return (
-            <CircleMarker
-              key={`project-${county.properties.fips}-${idx}`}
-              center={center}
-              radius={7}
-              pathOptions={{
-                fillColor: '#facc15',
-                color: '#ca8a04',
-                weight: 2,
-                fillOpacity: 0.85
-              }}
-            >
-              <Popup>
-                <div className="stress-popup">
-                  <h3>⚡ New Energy Project Candidate</h3>
-                  <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
-                  <p>Forecast Score: {forecastScore.toFixed(1)}/100</p>
-                  <p>Priority: {forecastScore >= 80 ? 'Immediate build' : 'Pipeline planning'}</p>
-                  <p>Goal: expand local generation for 2050 resilience.</p>
-                </div>
-              </Popup>
-            </CircleMarker>
-          )
-        }).filter(Boolean)}
-
-        {/* Energy storage recommendations */}
-        {showStorageSites && storageSiteCounties.map((county, idx) => {
-          const center = getCountyCentroid(county)
-          if (!center) return null
-
-          const forecastScore = getForecastScore(county)
-          return (
-            <CircleMarker
-              key={`storage-${county.properties.fips}-${idx}`}
-              center={center}
-              radius={7}
-              pathOptions={{
-                fillColor: '#22c55e',
-                color: '#15803d',
-                weight: 2,
-                fillOpacity: 0.85
-              }}
-            >
-              <Popup>
-                <div className="stress-popup">
-                  <h3>🔋 Storage Readiness Site</h3>
-                  <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
-                  <p>Forecast Score: {forecastScore.toFixed(1)}/100</p>
-                  <p>Recommendation: battery + microgrid for outage protection.</p>
                 </div>
               </Popup>
             </CircleMarker>
@@ -760,13 +579,23 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
         stepSize="month"
       />
 
+      <TimeSlider
+        minDate={new Date(2020, 0, 1)}
+        maxDate={new Date(2024, 11, 31)}
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
+        isPlaying={isPlaying}
+        onPlayToggle={setIsPlaying}
+        stepSize="month"
+      />
+
       {/* Legend */}
       {activeChoroplethLayer && (
         <div className="map-legend-enhanced">
           <div className="legend-title">{activeChoroplethLayer.name}</div>
           <div className="legend-gradient">
             <div className="legend-gradient-bar" style={{
-              background: `linear-gradient(to right, ${getColor(0)}, ${getColor(50)}, ${getColor(100)})`
+              background: `linear-gradient(to right, ${getColor(0, activeChoroplethLayer.id)}, ${getColor(50, activeChoroplethLayer.id)}, ${getColor(100, activeChoroplethLayer.id)})`
             }} />
             <div className="legend-gradient-labels">
               <span>Low</span>
