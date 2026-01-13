@@ -511,6 +511,72 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
       <LayerControls
         layers={layers}
         onLayerToggle={handleLayerToggle}
+        featuredLayerIds={['new-projects', 'storage-sites']}
+      />
+
+      {selectedCounty && (
+        <div className="map-sidebar">
+          <div className="map-sidebar-header">
+            <div>
+              <h3>{selectedCounty.properties.name} County, {selectedCounty.properties.state}</h3>
+              <p>Population: {selectedCounty.properties.totalPopulation.toLocaleString()}</p>
+            </div>
+            <button
+              className="map-sidebar-close"
+              onClick={() => setSelectedCounty(null)}
+              aria-label="Close details"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="map-sidebar-section">
+            <h4>AI Forecast</h4>
+            <p><strong>Forecast Score:</strong> {getForecastScore(selectedCounty).toFixed(1)}/100</p>
+            <p><strong>Forecast Level:</strong> {getForecastLevel(getForecastScore(selectedCounty))}</p>
+            <p><strong>Forecast Window:</strong> {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+          </div>
+          <div className="map-sidebar-section">
+            <h4>AI-driven Pricing Guidance</h4>
+            <p>
+              {getForecastScore(selectedCounty) >= 75
+                ? 'Surge +20%: target large industrial loads and automated demand response.'
+                : getForecastScore(selectedCounty) >= 60
+                  ? 'Peak +12%: shift flexible usage during high-risk hours.'
+                  : getForecastScore(selectedCounty) >= 50
+                    ? 'Flex +6%: encourage off-peak scheduling and conservation.'
+                    : 'Standard: maintain baseline pricing with monitoring.'}
+            </p>
+          </div>
+          <div className="map-sidebar-section">
+            <h4>2050 Readiness Investments</h4>
+            <p>
+              {getForecastScore(selectedCounty) >= 70
+                ? '⚡ New energy project recommended to strengthen local capacity.'
+                : '⚡ Monitor for future project pipeline opportunities.'}
+            </p>
+            <p>
+              {getForecastScore(selectedCounty) >= 60 || selectedCounty.emergencyMetrics.disasterStressScore >= 65
+                ? '🔋 Storage site recommended for disaster resilience.'
+                : '🔋 Storage optional; monitor for rising risk.'}
+            </p>
+          </div>
+          <div className="map-sidebar-section">
+            <h4>Emergency Readiness</h4>
+            <p><strong>Stress Level:</strong> {selectedCounty.emergencyMetrics.stressLevel}</p>
+            <p><strong>Overall Score:</strong> {selectedCounty.emergencyMetrics.overallStressScore.toFixed(1)}/100</p>
+            <p><strong>Disaster Declarations:</strong> {selectedCounty.emergencyMetrics.disasterCount}</p>
+          </div>
+        </div>
+      )}
+
+      <TimeSlider
+        minDate={new Date(2020, 0, 1)}
+        maxDate={new Date(2050, 11, 31)}
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
+        isPlaying={isPlaying}
+        onPlayToggle={setIsPlaying}
+        stepSize="month"
       />
 
       <TimeSlider

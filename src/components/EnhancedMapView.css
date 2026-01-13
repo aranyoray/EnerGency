@@ -81,7 +81,7 @@
 
 .map-legend-enhanced {
   position: absolute;
-  bottom: 120px;
+  top: 20px;
   right: 20px;
   background: white;
   border-radius: 8px;
@@ -140,7 +140,7 @@
   }
 
   .map-legend-enhanced {
-    bottom: 100px;
+    top: 100px;
     right: 10px;
     min-width: 150px;
   }
