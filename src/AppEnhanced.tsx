@@ -144,6 +144,7 @@ function AppEnhanced() {
               <li>Highlight AI forecast hotspots for proactive response</li>
               <li>Compare disaster exposure against projected stress levels</li>
               <li>Align mitigation plans with predicted risk windows</li>
+              <li>Extend projections through 2050 for long-range planning</li>
             </ul>
           </div>
 
@@ -153,6 +154,15 @@ function AppEnhanced() {
               EnerGency recommends targeted, time-based pricing signals to reduce peak demand
               when forecast risk is rising. Small pricing adjustments help shift industrial and
               automated loads without requiring major infrastructure rebuilds.
+            </p>
+          </div>
+
+          <div className="info-card">
+            <h3>⚡ 2050 Project & Storage Recommendations</h3>
+            <p>
+              Forecast layers flag candidate locations for new energy projects (⚡) and
+              energy storage sites (🔋) to improve disaster preparedness. These suggestions
+              help planners prioritize resilient generation and battery-backed microgrids.
             </p>
           </div>
 

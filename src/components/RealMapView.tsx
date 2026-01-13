@@ -95,6 +95,24 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
       icon: '💵'
     },
     {
+      id: 'new-projects',
+      name: 'New Energy Projects (⚡)',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#facc15',
+      icon: '⚡'
+    },
+    {
+      id: 'storage-sites',
+      name: 'Energy Storage Sites (🔋)',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#22c55e',
+      icon: '🔋'
+    },
+    {
       id: 'nightlight-points',
       name: 'Local Energy Activity',
       enabled: false,
@@ -170,6 +188,8 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
   const showInfrastructurePriority = layers.find(l => l.id === 'infrastructure-priority')?.enabled
   const showForecastHotspots = layers.find(l => l.id === 'forecast-pressure')?.enabled
   const showDynamicPricing = layers.find(l => l.id === 'dynamic-pricing')?.enabled
+  const showNewProjects = layers.find(l => l.id === 'new-projects')?.enabled
+  const showStorageSites = layers.find(l => l.id === 'storage-sites')?.enabled
 
   const clampScore = (value: number) => Math.max(0, Math.min(100, value))
 
@@ -327,6 +347,16 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
   const dynamicPricingCounties = showDynamicPricing
     ? counties.filter(county => getForecastScore(county) >= 50)
     : []
+  const newProjectCounties = showNewProjects
+    ? counties.filter(county =>
+        getForecastScore(county) >= 70 || county.emergencyMetrics.energyStressScore >= 65
+      )
+    : []
+  const storageSiteCounties = showStorageSites
+    ? counties.filter(county =>
+        getForecastScore(county) >= 60 || county.emergencyMetrics.disasterStressScore >= 65
+      )
+    : []
 
   const getCountyCentroid = (county: EnrichedCountyData) => {
     const coords = county.geometry.coordinates[0]
@@ -474,6 +504,67 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
                   <p>Forecast Score: {forecastScore.toFixed(1)}/100</p>
                   <p>Recommendation: {forecastScore >= 75 ? 'Surge +20%' : forecastScore >= 60 ? 'Peak +12%' : 'Flex +6%'}</p>
                   <p>Purpose: reduce peak demand ahead of forecast stress windows.</p>
+                </div>
+              </Popup>
+            </CircleMarker>
+          )
+        }).filter(Boolean)}
+
+        {/* New energy project recommendations */}
+        {showNewProjects && newProjectCounties.map((county, idx) => {
+          const center = getCountyCentroid(county)
+          if (!center) return null
+
+          const forecastScore = getForecastScore(county)
+          return (
+            <CircleMarker
+              key={`project-${county.properties.fips}-${idx}`}
+              center={center}
+              radius={7}
+              pathOptions={{
+                fillColor: '#facc15',
+                color: '#ca8a04',
+                weight: 2,
+                fillOpacity: 0.85
+              }}
+            >
+              <Popup>
+                <div className="stress-popup">
+                  <h3>⚡ New Energy Project Candidate</h3>
+                  <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
+                  <p>Forecast Score: {forecastScore.toFixed(1)}/100</p>
+                  <p>Priority: {forecastScore >= 80 ? 'Immediate build' : 'Pipeline planning'}</p>
+                  <p>Goal: expand local generation for 2050 resilience.</p>
+                </div>
+              </Popup>
+            </CircleMarker>
+          )
+        }).filter(Boolean)}
+
+        {/* Energy storage recommendations */}
+        {showStorageSites && storageSiteCounties.map((county, idx) => {
+          const center = getCountyCentroid(county)
+          if (!center) return null
+
+          const forecastScore = getForecastScore(county)
+          return (
+            <CircleMarker
+              key={`storage-${county.properties.fips}-${idx}`}
+              center={center}
+              radius={7}
+              pathOptions={{
+                fillColor: '#22c55e',
+                color: '#15803d',
+                weight: 2,
+                fillOpacity: 0.85
+              }}
+            >
+              <Popup>
+                <div className="stress-popup">
+                  <h3>🔋 Storage Readiness Site</h3>
+                  <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
+                  <p>Forecast Score: {forecastScore.toFixed(1)}/100</p>
+                  <p>Recommendation: battery + microgrid for outage protection.</p>
                 </div>
               </Popup>
             </CircleMarker>
@@ -637,6 +728,19 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
             </p>
           </div>
           <div className="map-sidebar-section">
+            <h4>2050 Readiness Investments</h4>
+            <p>
+              {getForecastScore(selectedCounty) >= 70
+                ? '⚡ New energy project recommended to strengthen local capacity.'
+                : '⚡ Monitor for future project pipeline opportunities.'}
+            </p>
+            <p>
+              {getForecastScore(selectedCounty) >= 60 || selectedCounty.emergencyMetrics.disasterStressScore >= 65
+                ? '🔋 Storage site recommended for disaster resilience.'
+                : '🔋 Storage optional; monitor for rising risk.'}
+            </p>
+          </div>
+          <div className="map-sidebar-section">
             <h4>Emergency Readiness</h4>
             <p><strong>Stress Level:</strong> {selectedCounty.emergencyMetrics.stressLevel}</p>
             <p><strong>Overall Score:</strong> {selectedCounty.emergencyMetrics.overallStressScore.toFixed(1)}/100</p>
@@ -647,7 +751,7 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
 
       <TimeSlider
         minDate={new Date(2020, 0, 1)}
-        maxDate={new Date(2024, 11, 31)}
+        maxDate={new Date(2050, 11, 31)}
         currentDate={currentDate}
         onDateChange={setCurrentDate}
         isPlaying={isPlaying}
