@@ -5,6 +5,8 @@
 
 import { useState } from 'react'
 import RealMapView from './components/RealMapView'
+import LayerControls from './components/LayerControls'
+import { MapLayerConfig } from './types/emergencyMetrics'
 import './App.css'
 import './AppEnhanced.css'
 
@@ -13,6 +15,117 @@ export type GeographicLevel = 'census-tract' | 'zip-code' | 'county' | 'city' | 
 function AppEnhanced() {
   const [geoLevel, setGeoLevel] = useState<GeographicLevel>('county')
   const [selectedState, setSelectedState] = useState<string | undefined>(undefined)
+  const [layers, setLayers] = useState<MapLayerConfig[]>([
+    {
+      id: 'county-choropleth',
+      name: 'County Readiness Pressure',
+      enabled: true,
+      type: 'choropleth',
+      dataKey: 'overallStressScore',
+      color: '#b91c1c'
+    },
+    {
+      id: 'forecast-pressure',
+      name: 'AI Forecast (12-Month Outlook)',
+      enabled: false,
+      type: 'choropleth',
+      dataKey: 'overallStressScore',
+      color: '#1d4ed8'
+    },
+    {
+      id: 'disaster-stress',
+      name: 'Disaster Exposure Level',
+      enabled: false,
+      type: 'choropleth',
+      dataKey: 'disasterStressScore',
+      color: '#f97316'
+    },
+    {
+      id: 'energy-reliability',
+      name: 'Energy Reliability Watchlist',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'energyStressScore',
+      color: '#2563eb',
+      icon: '⚡'
+    },
+    {
+      id: 'recovery-needs',
+      name: 'Disaster Recovery Needs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#f97316',
+      icon: '🛠️'
+    },
+    {
+      id: 'infrastructure-priority',
+      name: 'Critical Infrastructure Safeguards',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#7c3aed',
+      icon: '🏥'
+    },
+    {
+      id: 'pricing-consumers',
+      name: 'AI-driven Pricing for Consumers',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#16a34a',
+      icon: '💵'
+    },
+    {
+      id: 'new-projects',
+      name: 'New Energy Projects (⚡)',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#facc15',
+      icon: '⚡'
+    },
+    {
+      id: 'storage-sites',
+      name: 'Energy Storage Sites (🔋)',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#22c55e',
+      icon: '🔋'
+    },
+    {
+      id: 'nightlight-points',
+      name: 'Local Energy Activity',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'isTopStressed',
+      color: '#38bdf8'
+    },
+    {
+      id: 'top-stressed',
+      name: 'Priority Action Counties (⚠️)',
+      enabled: true,
+      type: 'symbols',
+      dataKey: 'isTopStressed',
+      color: '#b91c1c',
+      icon: '⚠️'
+    }
+  ])
+
+  const handleLayerToggle = (layerId: string, enabled: boolean) => {
+    setLayers(prevLayers =>
+      prevLayers.map(layer => {
+        if (layer.id === layerId) {
+          return { ...layer, enabled }
+        }
+        if (enabled && layer.type === 'choropleth' && layer.id !== layerId) {
+          return { ...layer, enabled: false }
+        }
+        return layer
+      })
+    )
+  }
 
   const states = [
     'All States', 'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
@@ -77,6 +190,14 @@ function AppEnhanced() {
               America. Measure disaster exposure, infrastructure strength, and energy
               independence to support local decision-making and responsible stewardship.
             </p>
+          </div>
+
+          <div className="info-card layer-controls-panel">
+            <LayerControls
+              layers={layers}
+              onLayerToggle={handleLayerToggle}
+              featuredLayerIds={['new-projects', 'storage-sites']}
+            />
           </div>
 
           <div className="info-card">
@@ -152,6 +273,7 @@ function AppEnhanced() {
           <RealMapView
             geoLevel={geoLevel}
             selectedState={selectedState}
+            layers={layers}
           />
         </div>
       </div>

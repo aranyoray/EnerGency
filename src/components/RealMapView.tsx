@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { MapContainer, TileLayer, GeoJSON, Tooltip, CircleMarker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, GeoJSON, Tooltip, CircleMarker, Popup, Circle } from 'react-leaflet'
 import { MapLayerConfig } from '../types/emergencyMetrics'
 import {
   loadAllRealData,
@@ -21,9 +21,10 @@ import 'leaflet/dist/leaflet.css'
 interface RealMapViewProps {
   geoLevel: 'census-tract' | 'zip-code' | 'county' | 'city' | 'state'
   selectedState?: string
+  layers: MapLayerConfig[]
 }
 
-const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
+const RealMapView = ({ geoLevel, selectedState, layers }: RealMapViewProps) => {
   const [counties, setCounties] = useState<EnrichedCountyData[]>([])
   const [nightlightData, setNightlightData] = useState<NightlightFeature[]>([])
   const [loading, setLoading] = useState(true)
@@ -190,12 +191,18 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
       value = getForecastScore(county)
     }
 
+    const fillOpacity = highlightedProject
+      ? highlightedProject.properties.fips === county.properties.fips
+        ? 0.85
+        : 0.2
+      : 0.7
+
     return {
       fillColor: getColor(value, activeChoroplethLayer.id),
       weight: 1,
       opacity: 1,
       color: '#ffffff',
-      fillOpacity: 0.7
+      fillOpacity
     }
   }
 
@@ -365,6 +372,7 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
           const center = getCountyCentroid(county)
           if (!center) return null
 
+          const opacity = getOverlayOpacity(county, 0.9)
           return (
             <CircleMarker
               key={`stressed-${county.properties.fips}-${idx}`}
@@ -374,7 +382,7 @@ const RealMapView = ({ geoLevel, selectedState }: RealMapViewProps) => {
                 fillColor: '#b91c1c',
                 color: '#7f1d1d',
                 weight: 2,
-                fillOpacity: 0.9
+                fillOpacity: opacity
               }}
             >
               <Popup>

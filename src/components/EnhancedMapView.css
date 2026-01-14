@@ -92,11 +92,72 @@
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.legend-title {
+.map-sidebar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 320px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+  z-index: 1100;
+  padding: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+.map-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.map-sidebar-header h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.map-sidebar-header p {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.map-sidebar-close {
+  background: #e2e8f0;
+  border: none;
+  color: #0f172a;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  height: 28px;
+}
+
+.map-sidebar-section {
+  margin-bottom: 12px;
+}
+
+.map-sidebar-section h4 {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #1d4ed8;
+}
+
+.map-sidebar-section p {
+  margin: 4px 0;
   font-size: 13px;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.legend-title {
+  font-size: 11px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .legend-gradient {
@@ -106,14 +167,14 @@
 }
 
 .legend-gradient-bar {
-  height: 20px;
+  height: 14px;
   border-radius: 4px;
 }
 
 .legend-gradient-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 10px;
   color: #666;
 }
 
@@ -142,7 +203,13 @@
   .map-legend-enhanced {
     top: 100px;
     right: 10px;
-    min-width: 150px;
+    min-width: 130px;
+  }
+
+  .map-sidebar {
+    position: static;
+    width: auto;
+    margin: 12px;
   }
 
   .map-sidebar {
