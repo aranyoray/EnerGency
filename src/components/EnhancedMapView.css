@@ -81,14 +81,14 @@
 
 .map-legend-enhanced {
   position: absolute;
-  bottom: 20px;
+  top: 20px;
   right: 20px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
-  padding: 8px 10px;
+  padding: 12px 16px;
   z-index: 1000;
-  min-width: 160px;
+  min-width: 200px;
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
@@ -201,9 +201,15 @@
   }
 
   .map-legend-enhanced {
-    bottom: 100px;
+    top: 100px;
     right: 10px;
     min-width: 130px;
+  }
+
+  .map-sidebar {
+    position: static;
+    width: auto;
+    margin: 12px;
   }
 
   .map-sidebar {

@@ -141,7 +141,7 @@ function AppEnhanced() {
         <div className="header-content">
           <h1>🇺🇸 EnerGency</h1>
           <p className="header-subtitle">
-            Rapid Energy Access for Natural Emergencies with AI-Driven Dynamic Pricing
+            American Energy Resilience & Community Readiness
           </p>
         </div>
         <div className="header-controls">
@@ -179,16 +179,16 @@ function AppEnhanced() {
           <div className="info-card">
             <h3>👤 Project Lead</h3>
             <p>
-              Ekaansh Ravuri, 16 | Chicago, IL
+              Ekaansh Ravuri, 15 | Chicago, IL
             </p>
           </div>
 
           <div className="info-card">
             <h3>📊 About This Dashboard</h3>
             <p>
-              EnerGency maps energy emergencies, migration patterns, and disaster risks into one
-              AI-powered view so local leaders can anticipate grid stress and act before outages
-              occur. The system is designed to support human decision-making, not replace it.
+              EnerGency delivers clear, accountable readiness insights for communities across
+              America. Measure disaster exposure, infrastructure strength, and energy
+              independence to support local decision-making and responsible stewardship.
             </p>
           </div>
 
@@ -204,7 +204,7 @@ function AppEnhanced() {
             <h3>📈 Available Metrics</h3>
             <ul className="metrics-list">
               <li><strong>Natural Disasters:</strong> Storm events, FEMA declarations, damage estimates</li>
-              <li><strong>Energy Reliability:</strong> Demand load, stress scores, and capacity pressure</li>
+              <li><strong>Energy Independence:</strong> Local capacity, reliability, and demand load</li>
               <li><strong>Household Burden:</strong> Share of income spent on power</li>
               <li><strong>Community Stability:</strong> Migration trends and local retention</li>
               <li><strong>Critical Infrastructure:</strong> Exposure for schools, hospitals, and services</li>
@@ -225,8 +225,7 @@ function AppEnhanced() {
             <ul className="usage-list">
               <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
               <li>Hover over areas to see detailed metrics</li>
-              <li>Use the <strong>time slider</strong> to view forecast windows</li>
-              <li>Enable <strong>AI Forecast</strong> layers for 12-month outlooks</li>
+              <li>Use the <strong>time slider</strong> to view trends over time</li>
               <li>⚠️ symbols mark priority attention areas</li>
               <li>Color intensity shows readiness severity</li>
             </ul>
@@ -259,44 +258,6 @@ function AppEnhanced() {
           </div>
 
           <div className="info-card">
-            <h3>🤖 AI Forecast & Scenario Planning</h3>
-            <ul className="sources-list">
-              <li>Use the forecast slider to simulate seasonal demand shifts</li>
-              <li>Highlight AI forecast hotspots for proactive response</li>
-              <li>Compare disaster exposure against projected stress levels</li>
-              <li>Align mitigation plans with predicted risk windows</li>
-              <li>Extend projections through 2050 for long-range planning</li>
-            </ul>
-          </div>
-
-          <div className="info-card">
-            <h3>💵 Dynamic Pricing Strategy</h3>
-            <p>
-              EnerGency recommends targeted, time-based pricing signals to reduce peak demand
-              when forecast risk is rising. Small pricing adjustments help shift industrial and
-              automated loads without requiring major infrastructure rebuilds.
-            </p>
-          </div>
-
-          <div className="info-card">
-            <h3>⚡ 2050 Project & Storage Recommendations</h3>
-            <p>
-              Forecast layers flag candidate locations for new energy projects (⚡) and
-              energy storage sites (🔋) to improve disaster preparedness. These suggestions
-              help planners prioritize resilient generation and battery-backed microgrids.
-            </p>
-          </div>
-
-          <div className="info-card">
-            <h3>🧪 Validation & Learning</h3>
-            <p>
-              AI outputs are reviewed in a human-in-the-loop workflow and aligned against known
-              events. A 2025 survey (n=79) across eight counties highlighted dynamic pricing as
-              the most useful feature and informed the new click-to-view details sidebar.
-            </p>
-          </div>
-
-          <div className="info-card">
             <h3>📚 Data Sources</h3>
             <ul className="sources-list">
               <li>NOAA Storm Events Database</li>
@@ -319,7 +280,7 @@ function AppEnhanced() {
 
       <footer className="app-footer">
         <p>
-          EnerGency by Ekaansh Ravuri | Built with transparent public data for local leaders |{' '}
+          Built with transparent public data for local leaders and community members |{' '}
           <a href="https://github.com" target="_blank" rel="noopener noreferrer">View on GitHub</a>
         </p>
       </footer>
