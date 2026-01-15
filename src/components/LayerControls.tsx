@@ -17,6 +17,23 @@ const LayerControls = ({ layers, onLayerToggle, featuredLayerIds = [] }: LayerCo
   const [collapsed, setCollapsed] = useState(false)
   const featuredLayers = layers.filter(layer => featuredLayerIds.includes(layer.id))
   const standardLayers = layers.filter(layer => !featuredLayerIds.includes(layer.id))
+  const layerDescriptions: Record<string, string> = {
+    'county-choropleth': 'Baseline readiness pressure by county.',
+    'forecast-pressure': 'AI-assisted outlook using seasonal + trend signals through 2050.',
+    'disaster-stress': 'Historical disaster exposure and emergency declarations.',
+    'energy-reliability': 'Counties with elevated grid stress and reliability risks.',
+    'recovery-needs': 'Areas needing disaster recovery attention.',
+    'infrastructure-priority': 'Hospitals, schools, and critical infrastructure hotspots.',
+    'county-pricing': 'County-level pricing signals to reduce peak demand.',
+    'manufacturing-hubs': 'High industrial and data center load centers.',
+    'agriculture-supply': 'Food and agriculture supply chain protection zones.',
+    'water-systems': 'Water treatment and pump reliability risks.',
+    'first-responders': 'First responder and hospital support hubs.',
+    'new-projects': 'Suggested new generation projects by 2050.',
+    'storage-sites': 'Suggested storage sites for disaster readiness.',
+    'nightlight-points': 'Nighttime satellite energy activity points.',
+    'top-stressed': 'Highest priority counties for immediate action.'
+  }
 
   return (
     <div className="layer-controls">
@@ -40,6 +57,9 @@ const LayerControls = ({ layers, onLayerToggle, featuredLayerIds = [] }: LayerCo
                     onChange={(e) => onLayerToggle(layer.id, e.target.checked)}
                   />
                   <span className="layer-name">{layer.name}</span>
+                  <span className="layer-info-icon" title={layerDescriptions[layer.id] || 'Layer details'}>
+                    i
+                  </span>
                   {layer.color && (
                     <span
                       className="layer-color-indicator"
@@ -59,6 +79,9 @@ const LayerControls = ({ layers, onLayerToggle, featuredLayerIds = [] }: LayerCo
                   onChange={(e) => onLayerToggle(layer.id, e.target.checked)}
                 />
                 <span className="layer-name">{layer.name}</span>
+                <span className="layer-info-icon" title={layerDescriptions[layer.id] || 'Layer details'}>
+                  i
+                </span>
                 {layer.color && (
                   <span
                     className="layer-color-indicator"
