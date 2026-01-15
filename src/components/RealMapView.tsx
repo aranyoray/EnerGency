@@ -9,7 +9,6 @@ import { MapLayerConfig } from '../types/emergencyMetrics'
 import {
   loadAllRealData,
   EnrichedCountyData,
-  getTopStressedCounties,
   filterCountiesByState
 } from '../services/realDataAggregator'
 import { NightlightFeature } from '../services/nightlightData'
@@ -92,9 +91,14 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
   const getForecastScore = (county: EnrichedCountyData) => {
     const base = county.emergencyMetrics.overallStressScore
     const seasonal = getSeasonalAdjustment(currentDate)
-    const trend = (currentDate.getFullYear() - 2020) * 1.5
+    const trend = (currentDate.getFullYear() - 2000) * 1.2
     const disasterMomentum = Math.min(county.emergencyMetrics.disasterCount * 0.8, 10)
     return clampScore(base + seasonal + trend + disasterMomentum)
+  }
+
+  const getYearFactor = () => {
+    const year = currentDate.getFullYear()
+    return Math.min(1, Math.max(0, (year - 2000) / 35))
   }
 
   const getForecastLevel = (score: number) => {
@@ -164,6 +168,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
       color: '#ffffff',
       fillOpacity: 0.7
     }
+    return score / normalizedCandidate.length
   }
 
   // On each county feature
@@ -175,35 +180,46 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
     const metrics = county.emergencyMetrics
     const forecastScore = getForecastScore(county)
     const forecastLevel = getForecastLevel(forecastScore)
+    const fipsValue = props.fips ? String(props.fips) : ''
+    const stateFips = fipsValue ? fipsValue.slice(0, 2) : props.state
 
     const tooltipContent = (
       <div className="metric-tooltip">
-        <h3>{props.name} County, {props.state}</h3>
+        <h3>{props.name} County, {stateFips}</h3>
+        <p><strong>Population:</strong> {props.totalPopulation.toLocaleString()}</p>
         <div className="metric-section">
-          <h4>Emergency Preparedness Metrics</h4>
-          <p><strong>Stress Level:</strong> {metrics.stressLevel}</p>
-          <p><strong>Overall Score:</strong> {metrics.overallStressScore.toFixed(1)}/100</p>
+          <h4>AI Driven Forecast for {currentDate.getFullYear()}</h4>
+          <p><strong>Risk Level:</strong> {forecastLevel.toLowerCase()} ({forecastScore.toFixed(1)})</p>
         </div>
         <div className="metric-section">
-          <h4>AI Outlook ({currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})</h4>
-          <p><strong>Forecast Score:</strong> {forecastScore.toFixed(1)}/100</p>
-          <p><strong>Forecast Level:</strong> {forecastLevel}</p>
-          <p><strong>Drivers:</strong> seasonal demand, recent disaster momentum, baseline readiness</p>
+          <h4>County-Level Pricing Guidance</h4>
+          <p>
+            {forecastScore >= 75
+              ? 'Surge +20%: target large industrial loads and automated demand response.'
+              : forecastScore >= 60
+                ? 'Peak +12%: shift flexible usage during high-risk hours.'
+                : forecastScore >= 50
+                  ? 'Flex +6%: encourage off-peak scheduling and conservation.'
+                  : 'Standard: maintain baseline pricing with monitoring.'}
+          </p>
         </div>
         <div className="metric-section">
-          <h4>Natural Disasters</h4>
-          <p><strong>FEMA Declarations:</strong> {metrics.disasterCount}</p>
-          <p><strong>Disaster Types:</strong> {metrics.disasterTypes.join(', ') || 'None'}</p>
-          {metrics.mostRecentDisaster && (
-            <p><strong>Most Recent:</strong> {metrics.mostRecentDisaster.incidentType} ({new Date(metrics.mostRecentDisaster.declarationDate).getFullYear()})</p>
-          )}
+          <h4>{currentDate.getFullYear()} Readiness Investments</h4>
+          <p>
+            {forecastScore >= 70
+              ? '⚡ New energy project recommended to strengthen local capacity.'
+              : '⚡ Monitor for future project pipeline opportunities.'}
+          </p>
+          <p>
+            {forecastScore >= 60 || metrics.disasterStressScore >= 65
+              ? '🔋 Storage site recommended for disaster resilience.'
+              : '🔋 Storage optional; monitor for rising risk.'}
+          </p>
         </div>
         <div className="metric-section">
-          <h4>Energy Data (Nighttime Light Proxy)</h4>
-          <p><strong>Light Intensity:</strong> {(props.avgIntensity * 100).toFixed(1)}%</p>
-          <p><strong>Total Energy:</strong> {props.totalEnergyMW.toFixed(0)} MW</p>
-          <p><strong>Population:</strong> {props.totalPopulation.toLocaleString()}</p>
-          <p><strong>Cities:</strong> {props.citiesCount}</p>
+          <h4>Emergency Readiness</h4>
+          <p><strong>Stress Level:</strong> {metrics.stressLevel} ({metrics.overallStressScore.toFixed(1)})</p>
+          <p><strong>Public Alerts sent:</strong> 0</p>
         </div>
       </div>
     )
@@ -220,7 +236,12 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
   }
 
   // Top stressed counties
-  const topStressedCounties = showTopStressed ? getTopStressedCounties(counties, 100) : []
+  const yearFactor = getYearFactor()
+  const topStressedCounties = showTopStressed
+    ? [...counties]
+        .sort((a, b) => getForecastScore(b) - getForecastScore(a))
+        .slice(0, 100)
+    : []
   const energyReliabilityCounties = showEnergyReliability
     ? counties.filter(county => county.emergencyMetrics.energyStressScore >= 60)
     : []
@@ -233,7 +254,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
       )
     : []
   const forecastHotspotCounties = showForecastHotspots
-    ? counties.filter(county => getForecastScore(county) >= 75)
+    ? counties.filter(county => getForecastScore(county) >= 60 + yearFactor * 20)
     : []
   const pricingCounties = showCountyPricing
     ? counties.filter(county => getForecastScore(county) >= 55)
@@ -304,6 +325,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
         style={{ height: '100%', width: '100%' }}
         zoomControl={true}
       >
+        <MapBehavior />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -384,6 +406,27 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             </CircleMarker>
           )
         }).filter(Boolean)}
+
+        {geoLevel === 'zip-code' && zipPlaceholders.map(placeholder => (
+          <CircleMarker
+            key={placeholder.id}
+            center={placeholder.coordinates}
+            radius={4}
+            pathOptions={{
+              fillColor: '#38bdf8',
+              color: '#0284c7',
+              weight: 1,
+              fillOpacity: 0.7
+            }}
+          >
+            <Tooltip>
+              <div>
+                <strong>ZIP Placeholder</strong><br />
+                {placeholder.county.properties.name} County, {placeholder.county.properties.state}
+              </div>
+            </Tooltip>
+          </CircleMarker>
+        ))}
 
         {/* Energy reliability watchlist */}
         {showEnergyReliability && energyReliabilityCounties.map((county, idx) => {
@@ -734,7 +777,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             </p>
           </div>
           <div className="map-sidebar-section">
-            <h4>2050 Readiness Investments</h4>
+            <h4>2035 Readiness Investments</h4>
             <p>
               {getForecastScore(selectedCounty) >= 70
                 ? '💡 New energy project recommended to strengthen local capacity.'

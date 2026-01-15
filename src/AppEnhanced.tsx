@@ -3,7 +3,7 @@
  * Interactive map with disaster preparedness metrics and energy management insights
  */
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import RealMapView from './components/RealMapView'
 import LayerControls from './components/LayerControls'
 import { MapLayerConfig } from './types/emergencyMetrics'
@@ -193,6 +193,10 @@ function AppEnhanced() {
 
   return (
     <div className="app">
+      {currentPath === '/AI-models' ? (
+        <AIModelsReport />
+      ) : (
+        <>
       <header className="app-header-enhanced">
         <div className="header-top">
           <div className="header-content">
@@ -250,8 +254,51 @@ function AppEnhanced() {
               ))}
             </select>
           </div>
+          <div className="control-group search-group">
+            <label>Location Search:</label>
+            <div className="search-input-group">
+              <input
+                className="search-input"
+                type="text"
+                placeholder="Search state or county"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearchSubmit()
+                  }
+                }}
+              />
+              <button className="search-button" onClick={handleSearchSubmit} type="button">
+                Go
+              </button>
+            </div>
+            {bestStateMatch && (
+              <div className="search-hint">Suggested state: {bestStateMatch}</div>
+            )}
+          </div>
         </div>
       </header>
+
+      {gpsPromptOpen && (
+        <div className="gps-overlay">
+          <div className="gps-modal">
+            <h3>📍 Enable GPS for Local Alerts?</h3>
+            <p>
+              Get quicker county insights by sharing your location. You can also search by name instead.
+            </p>
+            {gpsStatus && <p className="gps-status">{gpsStatus}</p>}
+            <div className="gps-actions">
+              <button type="button" className="gps-primary" onClick={handleGpsLookup}>
+                Share Location
+              </button>
+              <button type="button" className="gps-secondary" onClick={() => setGpsPromptOpen(false)}>
+                Not Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="app-content-enhanced">
         <div className="info-panel">
@@ -428,9 +475,11 @@ function AppEnhanced() {
       <footer className="app-footer">
         <p>
           Built with transparent public data for local leaders and community members |{' '}
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          <a href="/AI-models">View AI Models Report</a>
         </p>
       </footer>
+        </>
+      )}
     </div>
   )
 }
