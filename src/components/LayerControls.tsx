@@ -48,7 +48,7 @@ const LayerControls = ({ layers, onLayerToggle, featuredLayerIds = [] }: LayerCo
         <div className="layer-controls-content">
           {featuredLayers.length > 0 && (
             <div className="layer-controls-section">
-              <div className="layer-controls-title">2035 Overlays</div>
+              <div className="layer-controls-title">2050 Overlays</div>
               {featuredLayers.map(layer => (
                 <label key={layer.id} className="layer-control-item">
                   <input
