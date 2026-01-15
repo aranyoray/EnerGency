@@ -8,7 +8,6 @@ import RealMapView from './components/RealMapView'
 import LayerControls from './components/LayerControls'
 import { MapLayerConfig } from './types/emergencyMetrics'
 import TimeSlider from './components/TimeSlider'
-import AIModelsReport from './components/AIModelsReport'
 import './App.css'
 import './AppEnhanced.css'
 
@@ -17,12 +16,8 @@ export type GeographicLevel = 'census-tract' | 'zip-code' | 'county' | 'city' | 
 function AppEnhanced() {
   const [geoLevel, setGeoLevel] = useState<GeographicLevel>('county')
   const [selectedState, setSelectedState] = useState<string | undefined>(undefined)
-  const [currentDate, setCurrentDate] = useState(new Date(2015, 0, 1))
+  const [currentDate, setCurrentDate] = useState(new Date(2030, 0, 1))
   const [isPlaying, setIsPlaying] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [gpsPromptOpen, setGpsPromptOpen] = useState(true)
-  const [gpsStatus, setGpsStatus] = useState<string | null>(null)
-  const [currentPath, setCurrentPath] = useState(window.location.pathname)
   const [layers, setLayers] = useState<MapLayerConfig[]>([
     {
       id: 'county-choropleth',
@@ -34,7 +29,7 @@ function AppEnhanced() {
     },
     {
       id: 'forecast-pressure',
-      name: 'AI Forecast (2000-2035 Outlook)',
+      name: 'AI Forecast (2020-2050 Outlook)',
       enabled: false,
       type: 'choropleth',
       dataKey: 'overallStressScore',
@@ -122,16 +117,16 @@ function AppEnhanced() {
     },
     {
       id: 'new-projects',
-      name: '2035 New Energy Projects ⚡',
+      name: '2050 New Energy Projects 💡',
       enabled: false,
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#facc15',
-      icon: '⚡'
+      icon: '💡'
     },
     {
       id: 'storage-sites',
-      name: '2035 Storage Sites 🔋',
+      name: '2050 Storage Sites 🔋',
       enabled: false,
       type: 'symbols',
       dataKey: 'overallStressScore',
@@ -180,66 +175,6 @@ function AppEnhanced() {
   ]
 
   const activeChoroplethLayer = layers.find(layer => layer.enabled && layer.type === 'choropleth')
-  const stateOptions = useMemo(() => states.filter(state => state !== 'All States'), [states])
-
-  useEffect(() => {
-    const handlePopState = () => setCurrentPath(window.location.pathname)
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
-  }, [])
-
-  const normalizeText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
-
-  const fuzzyScore = (query: string, candidate: string) => {
-    const normalizedQuery = normalizeText(query)
-    const normalizedCandidate = normalizeText(candidate)
-    if (!normalizedQuery) return 0
-    if (normalizedCandidate.includes(normalizedQuery)) {
-      return normalizedQuery.length / normalizedCandidate.length + 1
-    }
-    let score = 0
-    let queryIndex = 0
-    for (const char of normalizedCandidate) {
-      if (char === normalizedQuery[queryIndex]) {
-        score += 1
-        queryIndex += 1
-      }
-      if (queryIndex >= normalizedQuery.length) break
-    }
-    return score / normalizedCandidate.length
-  }
-
-  const bestStateMatch = useMemo(() => {
-    if (!searchQuery.trim()) return null
-    const scored = stateOptions
-      .map(state => ({ state, score: fuzzyScore(searchQuery, state) }))
-      .sort((a, b) => b.score - a.score)
-    return scored[0]?.score ? scored[0].state : null
-  }, [searchQuery, stateOptions])
-
-  const handleSearchSubmit = () => {
-    if (bestStateMatch) {
-      setSelectedState(bestStateMatch)
-    }
-  }
-
-  const handleGpsLookup = () => {
-    if (!navigator.geolocation) {
-      setGpsStatus('GPS not supported in this browser.')
-      return
-    }
-    setGpsStatus('Locating...')
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        const { latitude, longitude } = position.coords
-        setGpsStatus(`GPS locked at ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`)
-      },
-      () => {
-        setGpsStatus('Unable to access GPS. You can still search by location.')
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    )
-  }
 
   const getLegendColor = (value: number, layerId?: string) => {
     if (layerId === 'forecast-pressure') {
@@ -374,8 +309,8 @@ function AppEnhanced() {
             </h3>
             <ol className="usage-list demo-list">
               <li>Choose a state and geographic level above.</li>
-              <li>Turn on the 2035 overlays for projects ⚡ and storage 🔋.</li>
-              <li>Slide the AI timeline to see 2000-2035 projections.</li>
+              <li>Turn on the 2050 overlays for projects 💡 and storage 🔋.</li>
+              <li>Slide the AI timeline to see 2050 projections.</li>
               <li>Click a county to see forecast + readiness details.</li>
             </ol>
           </div>
@@ -390,16 +325,16 @@ function AppEnhanced() {
 
           <div className="info-card">
             <h3>
-              🗓️ AI Timeline to 2035
+              🗓️ AI Timeline to 2050
               <span className="info-icon" title="Move the slider to simulate future readiness conditions.">i</span>
             </h3>
             <p>
-              This timeline projects readiness pressure, pricing signals, and investment needs through 2035.
+              This timeline projects readiness pressure, pricing signals, and investment needs through 2050.
               Move the slider or hit play to watch the AI forecast evolve.
             </p>
             <TimeSlider
-              minDate={new Date(2000, 0, 1)}
-              maxDate={new Date(2035, 11, 31)}
+              minDate={new Date(2020, 0, 1)}
+              maxDate={new Date(2050, 11, 31)}
               currentDate={currentDate}
               onDateChange={setCurrentDate}
               isPlaying={isPlaying}
@@ -410,11 +345,11 @@ function AppEnhanced() {
 
           <div className="info-card">
             <h3>
-              🧠 2035 Forecast & Recommendations
+              🧠 2050 Forecast & Recommendations
               <span className="info-icon" title="AI-assisted guidance for long-term investments.">i</span>
             </h3>
             <p>
-              The forecast highlights counties that should prepare for new energy projects ⚡
+              The forecast highlights counties that should prepare for new energy projects 💡
               and disaster-ready storage 🔋. Recommendations prioritize energy independence,
               resilient supply chains, and protection for seniors, veterans, and critical services.
             </p>
@@ -477,7 +412,7 @@ function AppEnhanced() {
             <ul className="usage-list">
               <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
               <li>Hover over areas to see detailed metrics</li>
-              <li>Use the <strong>AI timeline</strong> to view 2035 projections</li>
+              <li>Use the <strong>AI timeline</strong> to view 2050 projections</li>
               <li>⚠️ symbols mark priority action areas</li>
               <li>Color intensity shows readiness severity</li>
             </ul>
@@ -533,7 +468,6 @@ function AppEnhanced() {
             selectedState={selectedState}
             layers={layers}
             currentDate={currentDate}
-            searchQuery={searchQuery}
           />
         </div>
       </div>

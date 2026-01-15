@@ -19,7 +19,7 @@ const LayerControls = ({ layers, onLayerToggle, featuredLayerIds = [] }: LayerCo
   const standardLayers = layers.filter(layer => !featuredLayerIds.includes(layer.id))
   const layerDescriptions: Record<string, string> = {
     'county-choropleth': 'Baseline readiness pressure by county.',
-    'forecast-pressure': 'AI-assisted outlook using seasonal + trend signals through 2035.',
+    'forecast-pressure': 'AI-assisted outlook using seasonal + trend signals through 2050.',
     'disaster-stress': 'Historical disaster exposure and emergency declarations.',
     'energy-reliability': 'Counties with elevated grid stress and reliability risks.',
     'recovery-needs': 'Areas needing disaster recovery attention.',
@@ -29,7 +29,7 @@ const LayerControls = ({ layers, onLayerToggle, featuredLayerIds = [] }: LayerCo
     'agriculture-supply': 'Food and agriculture supply chain protection zones.',
     'water-systems': 'Water treatment and pump reliability risks.',
     'first-responders': 'First responder and hospital support hubs.',
-    'new-projects': 'Suggested new generation projects by 2035.',
+    'new-projects': 'Suggested new generation projects by 2050.',
     'storage-sites': 'Suggested storage sites for disaster readiness.',
     'nightlight-points': 'Nighttime satellite energy activity points.',
     'top-stressed': 'Highest priority counties for immediate action.'
