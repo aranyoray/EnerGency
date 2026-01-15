@@ -6,8 +6,17 @@
   border-bottom: 3px solid #ffffff;
 }
 
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .header-content {
-  margin-bottom: 16px;
+  margin-bottom: 4px;
 }
 
 .header-content h1 {
@@ -28,6 +37,20 @@
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
+}
+
+.header-legend {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  min-width: 220px;
+}
+
+.legend-metadata {
+  font-size: 11px;
+  margin-top: 6px;
+  color: #e2e8f0;
 }
 
 .control-group {
@@ -85,6 +108,9 @@
   font-size: 15px;
   font-weight: 700;
   color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .info-card p {
@@ -113,6 +139,24 @@
 .metrics-list strong,
 .usage-list strong {
   color: #1d4ed8;
+}
+
+.info-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #cbd5f5;
+  background: #e2e8f0;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-list {
+  padding-left: 18px;
 }
 
 .stress-levels .stress-level {
@@ -181,6 +225,10 @@
   .header-controls {
     flex-direction: column;
     gap: 12px;
+  }
+
+  .header-legend {
+    width: 100%;
   }
 
   .control-group {

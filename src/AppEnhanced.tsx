@@ -7,6 +7,7 @@ import { useState } from 'react'
 import RealMapView from './components/RealMapView'
 import LayerControls from './components/LayerControls'
 import { MapLayerConfig } from './types/emergencyMetrics'
+import TimeSlider from './components/TimeSlider'
 import './App.css'
 import './AppEnhanced.css'
 
@@ -15,6 +16,8 @@ export type GeographicLevel = 'census-tract' | 'zip-code' | 'county' | 'city' | 
 function AppEnhanced() {
   const [geoLevel, setGeoLevel] = useState<GeographicLevel>('county')
   const [selectedState, setSelectedState] = useState<string | undefined>(undefined)
+  const [currentDate, setCurrentDate] = useState(new Date(2030, 0, 1))
+  const [isPlaying, setIsPlaying] = useState(false)
   const [layers, setLayers] = useState<MapLayerConfig[]>([
     {
       id: 'county-choropleth',
@@ -26,7 +29,7 @@ function AppEnhanced() {
     },
     {
       id: 'forecast-pressure',
-      name: 'AI Forecast (12-Month Outlook)',
+      name: 'AI Forecast (2020-2050 Outlook)',
       enabled: false,
       type: 'choropleth',
       dataKey: 'overallStressScore',
@@ -68,26 +71,62 @@ function AppEnhanced() {
       icon: '🏥'
     },
     {
-      id: 'pricing-consumers',
-      name: 'AI-driven Pricing for Consumers',
+      id: 'county-pricing',
+      name: 'County-Level Pricing Signals',
       enabled: false,
       type: 'symbols',
       dataKey: 'overallStressScore',
-      color: '#16a34a',
+      color: '#0f766e',
       icon: '💵'
     },
     {
+      id: 'manufacturing-hubs',
+      name: 'Manufacturing & Data Center Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'energyStressScore',
+      color: '#0f172a',
+      icon: '🏭'
+    },
+    {
+      id: 'agriculture-supply',
+      name: 'Agriculture & Food Supply Chains',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#16a34a',
+      icon: '🌾'
+    },
+    {
+      id: 'water-systems',
+      name: 'Water System Reliability Risks',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#0284c7',
+      icon: '💧'
+    },
+    {
+      id: 'first-responders',
+      name: 'First Responder & Hospital Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#7c3aed',
+      icon: '🚓'
+    },
+    {
       id: 'new-projects',
-      name: 'New Energy Projects (⚡)',
+      name: '2050 New Energy Projects 💡',
       enabled: false,
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#facc15',
-      icon: '⚡'
+      icon: '💡'
     },
     {
       id: 'storage-sites',
-      name: 'Energy Storage Sites (🔋)',
+      name: '2050 Storage Sites 🔋',
       enabled: false,
       type: 'symbols',
       dataKey: 'overallStressScore',
@@ -135,14 +174,54 @@ function AppEnhanced() {
     'WA', 'WV', 'WI', 'WY'
   ]
 
+  const activeChoroplethLayer = layers.find(layer => layer.enabled && layer.type === 'choropleth')
+
+  const getLegendColor = (value: number, layerId?: string) => {
+    if (layerId === 'forecast-pressure') {
+      if (value >= 80) return '#1e3a8a'
+      if (value >= 60) return '#1d4ed8'
+      if (value >= 40) return '#38bdf8'
+      if (value >= 20) return '#bae6fd'
+      return '#e0f2fe'
+    }
+    if (value >= 80) return '#991b1b'
+    if (value >= 60) return '#dc2626'
+    if (value >= 40) return '#f97316'
+    if (value >= 20) return '#93c5fd'
+    return '#1d4ed8'
+  }
+
   return (
     <div className="app">
       <header className="app-header-enhanced">
-        <div className="header-content">
-          <h1>🇺🇸 EnerGency</h1>
-          <p className="header-subtitle">
-            American Energy Resilience & Community Readiness
-          </p>
+        <div className="header-top">
+          <div className="header-content">
+            <h1>🇺🇸 EnerGency</h1>
+            <p className="header-subtitle">
+              Energy Independence, Local Control, and Community Readiness
+            </p>
+          </div>
+          {activeChoroplethLayer && (
+            <div className="header-legend">
+              <div className="legend-title">{activeChoroplethLayer.name}</div>
+              <div className="legend-gradient">
+                <div className="legend-gradient-bar" style={{
+                  background: `linear-gradient(to right, ${getLegendColor(0, activeChoroplethLayer.id)}, ${getLegendColor(50, activeChoroplethLayer.id)}, ${getLegendColor(100, activeChoroplethLayer.id)})`
+                }} />
+                <div className="legend-gradient-labels">
+                  <span>Low</span>
+                  <span>Medium</span>
+                  <span>High</span>
+                </div>
+              </div>
+              <div className="legend-metadata">
+                <strong>Forecast Date:</strong> {currentDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              </div>
+              <div className="legend-metadata">
+                <strong>Data Sources:</strong> FEMA, NOAA, EIA, Census, VIIRS
+              </div>
+            </div>
+          )}
         </div>
         <div className="header-controls">
           <div className="control-group">
@@ -177,22 +256,19 @@ function AppEnhanced() {
       <div className="app-content-enhanced">
         <div className="info-panel">
           <div className="info-card">
-            <h3>👤 Project Lead</h3>
-            <p>
-              Ekaansh Ravuri, 15 | Chicago, IL
-            </p>
+            <h3>
+              ▶️ Quick Demo Tour
+              <span className="info-icon" title="Follow these steps for a guided walkthrough.">i</span>
+            </h3>
+            <ol className="usage-list demo-list">
+              <li>Choose a state and geographic level above.</li>
+              <li>Turn on the 2050 overlays for projects 💡 and storage 🔋.</li>
+              <li>Slide the AI timeline to see 2050 projections.</li>
+              <li>Click a county to see forecast + readiness details.</li>
+            </ol>
           </div>
 
           <div className="info-card">
-            <h3>📊 About This Dashboard</h3>
-            <p>
-              EnerGency delivers clear, accountable readiness insights for communities across
-              America. Measure disaster exposure, infrastructure strength, and energy
-              independence to support local decision-making and responsible stewardship.
-            </p>
-          </div>
-
-          <div className="info-card layer-controls-panel">
             <LayerControls
               layers={layers}
               onLayerToggle={handleLayerToggle}
@@ -201,7 +277,65 @@ function AppEnhanced() {
           </div>
 
           <div className="info-card">
-            <h3>📈 Available Metrics</h3>
+            <h3>
+              🗓️ AI Timeline to 2050
+              <span className="info-icon" title="Move the slider to simulate future readiness conditions.">i</span>
+            </h3>
+            <p>
+              This timeline projects readiness pressure, pricing signals, and investment needs through 2050.
+              Move the slider or hit play to watch the AI forecast evolve.
+            </p>
+            <TimeSlider
+              minDate={new Date(2020, 0, 1)}
+              maxDate={new Date(2050, 11, 31)}
+              currentDate={currentDate}
+              onDateChange={setCurrentDate}
+              isPlaying={isPlaying}
+              onPlayToggle={setIsPlaying}
+              stepSize="month"
+            />
+          </div>
+
+          <div className="info-card">
+            <h3>
+              🧠 2050 Forecast & Recommendations
+              <span className="info-icon" title="AI-assisted guidance for long-term investments.">i</span>
+            </h3>
+            <p>
+              The forecast highlights counties that should prepare for new energy projects 💡
+              and disaster-ready storage 🔋. Recommendations prioritize energy independence,
+              resilient supply chains, and protection for seniors, veterans, and critical services.
+            </p>
+          </div>
+
+          <div className="info-card">
+            <h3>
+              📊 About This Dashboard
+              <span className="info-icon" title="Designed for clear, common-sense planning.">i</span>
+            </h3>
+            <p>
+              EnerGency delivers clear, accountable readiness insights for communities across
+              America. Measure disaster exposure, infrastructure strength, and energy
+              independence to support local decision-making, fiscal discipline, and
+              responsible stewardship.
+            </p>
+          </div>
+
+          <div className="info-card">
+            <h3>
+              👤 Project Lead
+              <span className="info-icon" title="Student-led civic technology initiative.">i</span>
+            </h3>
+            <p>
+              Ekaansh Ravuri, 16 | Chicago, IL
+            </p>
+          </div>
+
+          <div className="info-card">
+            <h3>
+              📈 Available Metrics
+              <span className="info-icon" title="Hover over counties for detailed metrics.">i</span>
+            </h3>
             <ul className="metrics-list">
               <li><strong>Natural Disasters:</strong> Storm events, FEMA declarations, damage estimates</li>
               <li><strong>Energy Independence:</strong> Local capacity, reliability, and demand load</li>
@@ -212,7 +346,10 @@ function AppEnhanced() {
           </div>
 
           <div className="info-card">
-            <h3>🧭 Problem Statement</h3>
+            <h3>
+              🧭 Problem Statement
+              <span className="info-icon" title="Why the tool matters for emergency readiness.">i</span>
+            </h3>
             <p>
               Extreme weather and rapid population shifts create localized demand spikes that
               overwhelm a grid built for more predictable patterns. Without early forecasting,
@@ -221,12 +358,15 @@ function AppEnhanced() {
           </div>
 
           <div className="info-card">
-            <h3>🎯 How to Use</h3>
+            <h3>
+              🎯 How to Use
+              <span className="info-icon" title="Clear steps for first-time users.">i</span>
+            </h3>
             <ul className="usage-list">
               <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
               <li>Hover over areas to see detailed metrics</li>
-              <li>Use the <strong>time slider</strong> to view trends over time</li>
-              <li>⚠️ symbols mark priority attention areas</li>
+              <li>Use the <strong>AI timeline</strong> to view 2050 projections</li>
+              <li>⚠️ symbols mark priority action areas</li>
               <li>Color intensity shows readiness severity</li>
             </ul>
           </div>
@@ -248,17 +388,23 @@ function AppEnhanced() {
           </div>
 
           <div className="info-card">
-            <h3>🏛️ Community Priorities</h3>
+            <h3>
+              🏛️ Community Priorities
+              <span className="info-icon" title="Focus on families, farms, and local jobs.">i</span>
+            </h3>
             <ul className="sources-list">
-              <li>Support first responders and critical services readiness</li>
-              <li>Promote energy reliability and affordable household costs</li>
-              <li>Strengthen local decision-making and accountability</li>
+              <li>Support first responders, veterans, and critical services</li>
               <li>Protect families, farms, and small businesses</li>
+              <li>Promote energy reliability with fair household costs</li>
+              <li>Strengthen local control and public accountability</li>
             </ul>
           </div>
 
           <div className="info-card">
-            <h3>📚 Data Sources</h3>
+            <h3>
+              📚 Data Sources
+              <span className="info-icon" title="All sources are public and transparent.">i</span>
+            </h3>
             <ul className="sources-list">
               <li>NOAA Storm Events Database</li>
               <li>FEMA Disaster Declarations</li>
@@ -274,6 +420,7 @@ function AppEnhanced() {
             geoLevel={geoLevel}
             selectedState={selectedState}
             layers={layers}
+            currentDate={currentDate}
           />
         </div>
       </div>
