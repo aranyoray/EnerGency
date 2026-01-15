@@ -6,8 +6,17 @@
   border-bottom: 3px solid #ffffff;
 }
 
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .header-content {
-  margin-bottom: 16px;
+  margin-bottom: 4px;
 }
 
 .header-content h1 {
@@ -28,6 +37,137 @@
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
+}
+
+.header-legend {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  min-width: 220px;
+}
+
+.legend-metadata {
+  font-size: 11px;
+  margin-top: 6px;
+  color: #475569;
+}
+
+.header-legend .legend-title {
+  color: #0f172a;
+}
+
+.header-legend .legend-gradient-labels span {
+  color: #334155;
+}
+
+.search-group {
+  flex: 1;
+  min-width: 220px;
+}
+
+.search-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  font-size: 13px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
+}
+
+.search-button {
+  background: #1d4ed8;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background: #1e40af;
+}
+
+.search-hint {
+  font-size: 11px;
+  color: #e2e8f0;
+  margin-top: 4px;
+}
+
+.gps-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 20px;
+}
+
+.gps-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.gps-modal h3 {
+  margin: 0 0 8px 0;
+  color: #0f172a;
+}
+
+.gps-modal p {
+  margin: 0 0 12px 0;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.gps-status {
+  background: #f1f5f9;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.gps-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.gps-primary {
+  background: #1d4ed8;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.gps-secondary {
+  background: #e2e8f0;
+  color: #0f172a;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .control-group {
@@ -85,6 +225,9 @@
   font-size: 15px;
   font-weight: 700;
   color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .info-card p {
@@ -113,6 +256,24 @@
 .metrics-list strong,
 .usage-list strong {
   color: #1d4ed8;
+}
+
+.info-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #cbd5f5;
+  background: #e2e8f0;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-list {
+  padding-left: 18px;
 }
 
 .stress-levels .stress-level {
@@ -181,6 +342,10 @@
   .header-controls {
     flex-direction: column;
     gap: 12px;
+  }
+
+  .header-legend {
+    width: 100%;
   }
 
   .control-group {
