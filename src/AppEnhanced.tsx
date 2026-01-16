@@ -13,6 +13,21 @@ import './AppEnhanced.css'
 
 export type GeographicLevel = 'census-tract' | 'zip-code' | 'county' | 'city' | 'state'
 
+const PolicyBanner = () => (
+  <div className="policy-banner">
+    <div>
+      <h1>🇺🇸 EnerGency - American Energy Dominance Dashboard</h1>
+      <p>
+        Supporting energy independence, grid reliability, and national security for every community.
+      </p>
+    </div>
+    <div className="policy-banner-right">
+      <div><strong>America First Energy Policy</strong></div>
+      <div>Nuclear Renaissance | Fossil Fuel Development | Critical Minerals</div>
+    </div>
+  </div>
+)
+
 function AppEnhanced() {
   const [geoLevel, setGeoLevel] = useState<GeographicLevel>('county')
   const [selectedState, setSelectedState] = useState<string | undefined>(undefined)
@@ -26,6 +41,60 @@ function AppEnhanced() {
       type: 'choropleth',
       dataKey: 'overallStressScore',
       color: '#b91c1c'
+    },
+    {
+      id: 'nuclear-plants',
+      name: 'Nuclear Power Plants',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#16a34a',
+      icon: '☢️'
+    },
+    {
+      id: 'fossil-infrastructure',
+      name: 'Fossil Fuel Infrastructure',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#0f172a',
+      icon: '🛢️'
+    },
+    {
+      id: 'critical-minerals',
+      name: 'Critical Minerals Deposits',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#f97316',
+      icon: '⛏️'
+    },
+    {
+      id: 'oil-gas-regions',
+      name: 'Oil & Gas Production Regions',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#92400e',
+      icon: '🏗️'
+    },
+    {
+      id: 'grid-infrastructure',
+      name: 'Energy Grid Infrastructure',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#2563eb',
+      icon: '🔌'
+    },
+    {
+      id: 'spr-sites',
+      name: 'Strategic Petroleum Reserve Sites',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#dc2626',
+      icon: '🛡️'
     },
     {
       id: 'forecast-pressure',
@@ -194,11 +263,12 @@ function AppEnhanced() {
   return (
     <div className="app">
       <header className="app-header-enhanced">
+        <PolicyBanner />
         <div className="header-top">
           <div className="header-content">
-            <h1>🇺🇸 EnerGency</h1>
+            <h1>EnerGency: American Energy Dominance & Emergency Preparedness</h1>
             <p className="header-subtitle">
-              Energy Independence, Local Control, and Community Readiness
+              Ensuring energy security and community resilience across America.
             </p>
           </div>
           {activeChoroplethLayer && (
@@ -218,7 +288,7 @@ function AppEnhanced() {
                 <strong>Forecast Date:</strong> {currentDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
               </div>
               <div className="legend-metadata">
-                <strong>Data Sources:</strong> FEMA, NOAA, EIA, Census, VIIRS
+                <strong>Data Sources:</strong> FEMA, NOAA, EIA, NRC, USGS, Census
               </div>
             </div>
           )}
@@ -269,6 +339,26 @@ function AppEnhanced() {
           </div>
 
           <div className="info-card">
+            <h3>
+              🎯 Administration Energy Goals
+            </h3>
+            <ul className="metrics-list">
+              <li>✅ Expand nuclear capacity from 100 GW to 400 GW by 2050</li>
+              <li>✅ Achieve total energy independence from foreign sources</li>
+              <li>✅ Secure domestic critical minerals supply chains</li>
+              <li>✅ Restore American manufacturing through affordable energy</li>
+              <li>✅ Ensure grid reliability with reliable, dispatchable power</li>
+            </ul>
+            <h3 className="section-spacing">📊 Current Achievements (2025)</h3>
+            <ul className="metrics-list">
+              <li>🛢️ Record oil production: 24.2M barrels/day</li>
+              <li>⛽ Gas prices at 4-year low: ~$2.90/gallon</li>
+              <li>⚡ 11 advanced nuclear reactors in development</li>
+              <li>🏭 $800M in SMR funding deployed</li>
+            </ul>
+          </div>
+
+          <div className="info-card">
             <LayerControls
               layers={layers}
               onLayerToggle={handleLayerToggle}
@@ -304,7 +394,7 @@ function AppEnhanced() {
             <p>
               The forecast highlights counties that should prepare for new energy projects 💡
               and disaster-ready storage 🔋. Recommendations prioritize energy independence,
-              resilient supply chains, and protection for seniors, veterans, and critical services.
+              reliable baseload power, resilient supply chains, and protection for critical services.
             </p>
           </div>
 
@@ -314,10 +404,10 @@ function AppEnhanced() {
               <span className="info-icon" title="Designed for clear, common-sense planning.">i</span>
             </h3>
             <p>
-              EnerGency delivers clear, accountable readiness insights for communities across
-              America. Measure disaster exposure, infrastructure strength, and energy
-              independence to support local decision-making, fiscal discipline, and
-              responsible stewardship.
+              EnerGency provides actionable intelligence on energy infrastructure resilience,
+              emergency preparedness, and America&apos;s path to energy dominance. Built with real
+              data from FEMA, NOAA, and federal energy agencies to support reliable, affordable
+              energy for every American community.
             </p>
           </div>
 
@@ -338,7 +428,7 @@ function AppEnhanced() {
             </h3>
             <ul className="metrics-list">
               <li><strong>Natural Disasters:</strong> Storm events, FEMA declarations, damage estimates</li>
-              <li><strong>Energy Independence:</strong> Local capacity, reliability, and demand load</li>
+              <li><strong>Energy Independence:</strong> Domestic capacity, reliability, and demand load</li>
               <li><strong>Household Burden:</strong> Share of income spent on power</li>
               <li><strong>Community Stability:</strong> Migration trends and local retention</li>
               <li><strong>Critical Infrastructure:</strong> Exposure for schools, hospitals, and services</li>
@@ -351,9 +441,9 @@ function AppEnhanced() {
               <span className="info-icon" title="Why the tool matters for emergency readiness.">i</span>
             </h3>
             <p>
-              Extreme weather and rapid population shifts create localized demand spikes that
-              overwhelm a grid built for more predictable patterns. Without early forecasting,
-              communities face blackouts, delayed response, and costly recoveries.
+              Severe weather and rapid population shifts create localized demand spikes that
+              stress critical infrastructure. Without early forecasting and reliable baseload power,
+              communities face outages, delayed response, and costly recoveries.
             </p>
           </div>
 
@@ -409,8 +499,10 @@ function AppEnhanced() {
               <li>NOAA Storm Events Database</li>
               <li>FEMA Disaster Declarations</li>
               <li>U.S. Energy Information Administration (EIA)</li>
+              <li>Nuclear Regulatory Commission (NRC) Reactor Data</li>
+              <li>U.S. Geological Survey (USGS) Critical Minerals</li>
               <li>U.S. Census Bureau Migration Data</li>
-              <li>Department of Energy (DOE) LEAD Tool</li>
+              <li>Department of Energy (DOE) Energy Infrastructure Data</li>
             </ul>
           </div>
         </div>

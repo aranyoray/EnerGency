@@ -6,6 +6,37 @@
   border-bottom: 3px solid #ffffff;
 }
 
+.policy-banner {
+  background: linear-gradient(90deg, #1e3a8a 0%, #dc2626 100%);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.25);
+}
+
+.policy-banner h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.policy-banner p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+.policy-banner-right {
+  text-align: right;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 .header-top {
   display: flex;
   justify-content: space-between;
@@ -155,6 +186,10 @@
   justify-content: center;
 }
 
+.section-spacing {
+  margin-top: 16px;
+}
+
 .demo-list {
   padding-left: 18px;
 }
@@ -214,6 +249,17 @@
 }
 
 @media (max-width: 768px) {
+  .policy-banner {
+    flex-direction: column;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .policy-banner-right {
+    text-align: left;
+    white-space: normal;
+  }
+
   .header-content h1 {
     font-size: 24px;
   }

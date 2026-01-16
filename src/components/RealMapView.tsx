@@ -23,6 +23,183 @@ interface RealMapViewProps {
   currentDate: Date
 }
 
+const nuclearPlants = [
+  {
+    name: 'Palo Verde Nuclear Generating Station',
+    location: [33.389, -112.865] as [number, number],
+    capacityMW: 3990,
+    reactorType: 'PWR',
+    status: 'Operating',
+    operator: 'Arizona Public Service'
+  },
+  {
+    name: 'Vogtle Units 3 & 4',
+    location: [33.142, -81.762] as [number, number],
+    capacityMW: 2234,
+    reactorType: 'AP1000',
+    status: 'Operating',
+    operator: 'Southern Company'
+  },
+  {
+    name: 'South Texas Project',
+    location: [28.795, -96.045] as [number, number],
+    capacityMW: 2560,
+    reactorType: 'PWR',
+    status: 'Operating',
+    operator: 'STP Nuclear Operating Company'
+  },
+  {
+    name: 'NuScale Carbon Free Power (Planned)',
+    location: [43.61, -116.202] as [number, number],
+    capacityMW: 924,
+    reactorType: 'SMR',
+    status: 'Planned',
+    operator: 'UAMPS'
+  }
+]
+
+const fossilFuelInfrastructure = [
+  {
+    type: 'coal_plant',
+    name: 'James H. Miller Jr. Power Plant',
+    location: [33.33, -87.2] as [number, number],
+    capacity: '2,880 MW',
+    operator: 'Alabama Power'
+  },
+  {
+    type: 'natural_gas_plant',
+    name: 'Guadalupe Generating Station',
+    location: [29.63, -97.73] as [number, number],
+    capacity: '1,024 MW',
+    operator: 'Guadalupe Energy Center'
+  },
+  {
+    type: 'oil_refinery',
+    name: 'Port Arthur Refinery',
+    location: [29.88, -93.93] as [number, number],
+    capacity: '635,000 bpd',
+    operator: 'Motiva'
+  },
+  {
+    type: 'lng_terminal',
+    name: 'Sabine Pass LNG',
+    location: [29.73, -93.87] as [number, number],
+    capacity: '30 MTPA',
+    operator: 'Cheniere Energy'
+  }
+]
+
+const criticalMineralDeposits = [
+  {
+    mineral: 'Uranium',
+    location: [38.85, -109.5] as [number, number],
+    status: 'Active',
+    strategicImportance: 'Critical'
+  },
+  {
+    mineral: 'Rare Earths',
+    location: [35.47, -117.67] as [number, number],
+    status: 'Active',
+    strategicImportance: 'Critical'
+  },
+  {
+    mineral: 'Lithium',
+    location: [40.82, -118.16] as [number, number],
+    status: 'Proposed',
+    strategicImportance: 'Important'
+  },
+  {
+    mineral: 'Copper',
+    location: [33.4, -111.1] as [number, number],
+    status: 'Potential',
+    strategicImportance: 'Valuable'
+  }
+]
+
+const oilGasRegions = [
+  {
+    name: 'Permian Basin',
+    location: [31.8, -102.0] as [number, number],
+    production: '6.0M bpd',
+    note: "America's energy powerhouse"
+  },
+  {
+    name: 'Bakken Formation',
+    location: [47.7, -103.3] as [number, number],
+    production: '1.2M bpd',
+    note: 'Shale revolution leader'
+  },
+  {
+    name: 'Marcellus Shale',
+    location: [40.8, -77.8] as [number, number],
+    production: '34 BCF/day',
+    note: 'Natural gas leader'
+  },
+  {
+    name: 'Gulf of Mexico OCS',
+    location: [28.7, -90.5] as [number, number],
+    production: '1.8M bpd',
+    note: 'Offshore energy dominance'
+  }
+]
+
+const gridInfrastructure = [
+  {
+    type: 'transmission_line',
+    name: 'PJM 500 kV Corridor',
+    location: [39.5, -77.2] as [number, number],
+    voltage: 500,
+    operator: 'PJM',
+    saidi: 94,
+    saifi: 1.2
+  },
+  {
+    type: 'substation',
+    name: 'Comanche Substation',
+    location: [39.1, -104.9] as [number, number],
+    voltage: 345,
+    operator: 'Xcel Energy',
+    saidi: 102,
+    saifi: 1.4
+  },
+  {
+    type: 'interconnection',
+    name: 'ERCOT Intertie Hub',
+    location: [30.3, -97.7] as [number, number],
+    voltage: 345,
+    operator: 'ERCOT',
+    saidi: 78,
+    saifi: 0.9
+  }
+]
+
+const sprSites = [
+  {
+    name: 'Bryan Mound',
+    location: [29.05, -95.6] as [number, number],
+    fillLevel: '81%',
+    capacity: '254 million barrels'
+  },
+  {
+    name: 'Big Hill',
+    location: [29.6, -94.3] as [number, number],
+    fillLevel: '79%',
+    capacity: '160 million barrels'
+  },
+  {
+    name: 'West Hackberry',
+    location: [29.95, -93.35] as [number, number],
+    fillLevel: '74%',
+    capacity: '219 million barrels'
+  },
+  {
+    name: 'Bayou Choctaw',
+    location: [30.05, -91.2] as [number, number],
+    fillLevel: '76%',
+    capacity: '76 million barrels'
+  }
+]
+
 const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapViewProps) => {
   const [counties, setCounties] = useState<EnrichedCountyData[]>([])
   const [nightlightData, setNightlightData] = useState<NightlightFeature[]>([])
@@ -79,6 +256,12 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
   const showFirstResponders = layers.find(l => l.id === 'first-responders')?.enabled
   const showNewProjects = layers.find(l => l.id === 'new-projects')?.enabled
   const showStorageSites = layers.find(l => l.id === 'storage-sites')?.enabled
+  const showNuclearPlants = layers.find(l => l.id === 'nuclear-plants')?.enabled
+  const showFossilInfrastructure = layers.find(l => l.id === 'fossil-infrastructure')?.enabled
+  const showCriticalMinerals = layers.find(l => l.id === 'critical-minerals')?.enabled
+  const showOilGasRegions = layers.find(l => l.id === 'oil-gas-regions')?.enabled
+  const showGridInfrastructure = layers.find(l => l.id === 'grid-infrastructure')?.enabled
+  const showSprSites = layers.find(l => l.id === 'spr-sites')?.enabled
 
   const clampScore = (value: number) => Math.max(0, Math.min(100, value))
 
@@ -698,7 +881,188 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             </CircleMarker>
           )
         }).filter(Boolean)}
+
+        {showNuclearPlants && nuclearPlants.map((plant, idx) => (
+          <CircleMarker
+            key={`nuclear-${plant.name}-${idx}`}
+            center={plant.location}
+            radius={9}
+            pathOptions={{
+              fillColor: '#16a34a',
+              color: '#166534',
+              weight: 2,
+              fillOpacity: 0.85
+            }}
+          >
+            <Popup>
+              <div className="stress-popup">
+                <h3>☢️ Nuclear Power Plant</h3>
+                <p><strong>{plant.name}</strong></p>
+                <p>Capacity: {plant.capacityMW.toLocaleString()} MW</p>
+                <p>Reactor: {plant.reactorType}</p>
+                <p>Status: {plant.status}</p>
+                <p>Operator: {plant.operator}</p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
+
+        {showFossilInfrastructure && fossilFuelInfrastructure.map((site, idx) => (
+          <CircleMarker
+            key={`fossil-${site.name}-${idx}`}
+            center={site.location}
+            radius={8}
+            pathOptions={{
+              fillColor: '#0f172a',
+              color: '#1f2937',
+              weight: 2,
+              fillOpacity: 0.85
+            }}
+          >
+            <Popup>
+              <div className="stress-popup">
+                <h3>🛢️ Fossil Fuel Infrastructure</h3>
+                <p><strong>{site.name}</strong></p>
+                <p>Type: {site.type.replace('_', ' ')}</p>
+                <p>Capacity: {site.capacity}</p>
+                <p>Operator: {site.operator}</p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
+
+        {showCriticalMinerals && criticalMineralDeposits.map((deposit, idx) => (
+          <CircleMarker
+            key={`mineral-${deposit.mineral}-${idx}`}
+            center={deposit.location}
+            radius={7}
+            pathOptions={{
+              fillColor: '#f97316',
+              color: '#c2410c',
+              weight: 2,
+              fillOpacity: 0.85
+            }}
+          >
+            <Popup>
+              <div className="stress-popup">
+                <h3>⛏️ Critical Mineral Deposit</h3>
+                <p><strong>{deposit.mineral}</strong></p>
+                <p>Status: {deposit.status}</p>
+                <p>Strategic Importance: {deposit.strategicImportance}</p>
+                <p>Focus: Domestic supply chain security</p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
+
+        {showOilGasRegions && oilGasRegions.map((region, idx) => (
+          <CircleMarker
+            key={`region-${region.name}-${idx}`}
+            center={region.location}
+            radius={14}
+            pathOptions={{
+              fillColor: '#92400e',
+              color: '#78350f',
+              weight: 2,
+              fillOpacity: 0.55
+            }}
+          >
+            <Popup>
+              <div className="stress-popup">
+                <h3>🏗️ Oil & Gas Production Region</h3>
+                <p><strong>{region.name}</strong></p>
+                <p>Production: {region.production}</p>
+                <p>{region.note}</p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
+
+        {showGridInfrastructure && gridInfrastructure.map((asset, idx) => (
+          <CircleMarker
+            key={`grid-${asset.name}-${idx}`}
+            center={asset.location}
+            radius={7}
+            pathOptions={{
+              fillColor: '#2563eb',
+              color: '#1d4ed8',
+              weight: 2,
+              fillOpacity: 0.85
+            }}
+          >
+            <Popup>
+              <div className="stress-popup">
+                <h3>🔌 Grid Infrastructure</h3>
+                <p><strong>{asset.name}</strong></p>
+                <p>Type: {asset.type.replace('_', ' ')}</p>
+                <p>Voltage: {asset.voltage} kV</p>
+                <p>Operator: {asset.operator}</p>
+                <p>Reliability: SAIDI {asset.saidi}, SAIFI {asset.saifi}</p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
+
+        {showSprSites && sprSites.map((site, idx) => (
+          <CircleMarker
+            key={`spr-${site.name}-${idx}`}
+            center={site.location}
+            radius={8}
+            pathOptions={{
+              fillColor: '#dc2626',
+              color: '#991b1b',
+              weight: 2,
+              fillOpacity: 0.9
+            }}
+          >
+            <Popup>
+              <div className="stress-popup">
+                <h3>🛡️ Strategic Petroleum Reserve</h3>
+                <p><strong>{site.name}</strong></p>
+                <p>Fill Level: {site.fillLevel}</p>
+                <p>Capacity: {site.capacity}</p>
+                <p>Total SPR Capacity: 714 million barrels</p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
       </MapContainer>
+
+      {activeChoroplethLayer && (
+        <div className="map-legend-enhanced">
+          <div className="legend-title">County Readiness Pressure</div>
+          <div className="legend-list">
+            <div className="legend-item-row">
+              <div
+                className="legend-color-box"
+                style={{ backgroundColor: getColor(10, activeChoroplethLayer.id) }}
+              />
+              <span>Low Pressure (0-25)</span>
+            </div>
+            <div className="legend-item-row">
+              <div
+                className="legend-color-box"
+                style={{ backgroundColor: getColor(35, activeChoroplethLayer.id) }}
+              />
+              <span>Moderate Pressure (25-50)</span>
+            </div>
+            <div className="legend-item-row">
+              <div
+                className="legend-color-box"
+                style={{ backgroundColor: getColor(65, activeChoroplethLayer.id) }}
+              />
+              <span>High Pressure (50-75)</span>
+            </div>
+            <div className="legend-item-row">
+              <div
+                className="legend-color-box"
+                style={{ backgroundColor: getColor(90, activeChoroplethLayer.id) }}
+              />
+              <span>Critical Pressure (75-100)</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedCounty && (
         <div className="map-sidebar">
