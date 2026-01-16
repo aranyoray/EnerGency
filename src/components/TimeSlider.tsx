@@ -14,6 +14,7 @@ interface TimeSliderProps {
   isPlaying?: boolean
   onPlayToggle?: (playing: boolean) => void
   stepSize?: 'hour' | 'day' | 'week' | 'month'
+  className?: string
 }
 
 const TimeSlider = ({
@@ -23,7 +24,8 @@ const TimeSlider = ({
   onDateChange,
   isPlaying = false,
   onPlayToggle,
-  stepSize = 'day'
+  stepSize = 'day',
+  className
 }: TimeSliderProps) => {
   const [playing, setPlaying] = useState(isPlaying)
 
@@ -106,7 +108,7 @@ const TimeSlider = ({
   }
 
   return (
-    <div className="time-slider">
+    <div className={`time-slider${className ? ` ${className}` : ''}`}>
       <div className="time-slider-header">
         <button
           className="play-button"

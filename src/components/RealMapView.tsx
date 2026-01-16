@@ -334,7 +334,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`nightlight-${idx}`}
               center={[lat, lon]}
-              radius={Math.max(2, location.properties.intensity * 8)}
+              radius={Math.max(1.5, location.properties.intensity * 3)}
               pathOptions={{
                 fillColor: '#38bdf8',
                 color: '#0ea5e9',
@@ -364,7 +364,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`stressed-${county.properties.fips}-${idx}`}
               center={center}
-              radius={8}
+              radius={4}
               pathOptions={{
                 fillColor: '#b91c1c',
                 color: '#7f1d1d',
@@ -394,7 +394,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`reliability-${county.properties.fips}-${idx}`}
               center={center}
-              radius={6}
+              radius={4}
               pathOptions={{
                 fillColor: '#2563eb',
                 color: '#1d4ed8',
@@ -423,7 +423,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`recovery-${county.properties.fips}-${idx}`}
               center={center}
-              radius={6}
+              radius={4}
               pathOptions={{
                 fillColor: '#f97316',
                 color: '#c2410c',
@@ -452,7 +452,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`infrastructure-${county.properties.fips}-${idx}`}
               center={center}
-              radius={6}
+              radius={4}
               pathOptions={{
                 fillColor: '#7c3aed',
                 color: '#5b21b6',
@@ -482,7 +482,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`forecast-${county.properties.fips}-${idx}`}
               center={center}
-              radius={9}
+              radius={4}
               pathOptions={{
                 fillColor: '#1d4ed8',
                 color: '#0f172a',
@@ -511,7 +511,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`pricing-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#0f766e',
                 color: '#115e59',
@@ -539,7 +539,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`manufacturing-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#0f172a',
                 color: '#1e293b',
@@ -567,7 +567,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`agriculture-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#16a34a',
                 color: '#15803d',
@@ -595,7 +595,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`water-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#0284c7',
                 color: '#0369a1',
@@ -623,7 +623,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`responders-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#7c3aed',
                 color: '#5b21b6',
@@ -651,7 +651,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`projects-${county.properties.fips}-${idx}`}
               center={center}
-              radius={8}
+              radius={4}
               pathOptions={{
                 fillColor: '#facc15',
                 color: '#ca8a04',
@@ -679,7 +679,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
             <CircleMarker
               key={`storage-${county.properties.fips}-${idx}`}
               center={center}
-              radius={8}
+              radius={4}
               pathOptions={{
                 fillColor: '#22c55e',
                 color: '#15803d',
@@ -715,14 +715,28 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
               ✕
             </button>
           </div>
+          <div className="map-sidebar-summary">
+            <div className="summary-item">
+              <span className="summary-label">Forecast</span>
+              <span className="summary-value">{getForecastScore(selectedCounty).toFixed(1)}</span>
+            </div>
+            <div className="summary-item">
+              <span className="summary-label">Stress level</span>
+              <span className="summary-value">{selectedCounty.emergencyMetrics.stressLevel}</span>
+            </div>
+            <div className="summary-item">
+              <span className="summary-label">Disasters</span>
+              <span className="summary-value">{selectedCounty.emergencyMetrics.disasterCount}</span>
+            </div>
+          </div>
           <div className="map-sidebar-section">
-            <h4>AI Forecast to 2050</h4>
+            <h4>Emergency predictions</h4>
             <p><strong>Forecast Score:</strong> {getForecastScore(selectedCounty).toFixed(1)}/100</p>
             <p><strong>Forecast Level:</strong> {getForecastLevel(getForecastScore(selectedCounty))}</p>
             <p><strong>Forecast Window:</strong> {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
           </div>
           <div className="map-sidebar-section">
-            <h4>County-Level Pricing Guidance</h4>
+            <h4>Energy predictions</h4>
             <p>
               {getForecastScore(selectedCounty) >= 75
                 ? 'Surge +20%: target large industrial loads and automated demand response.'
