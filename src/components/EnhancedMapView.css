@@ -103,6 +103,8 @@
   z-index: 1100;
   padding: 16px;
   border: 1px solid rgba(15, 23, 42, 0.1);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .map-sidebar-header {
@@ -110,6 +112,7 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
+  align-items: flex-start;
 }
 
 .map-sidebar-header h3 {
@@ -136,6 +139,38 @@
 
 .map-sidebar-section {
   margin-bottom: 12px;
+}
+
+.map-sidebar-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 12px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+
+.summary-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.summary-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .map-sidebar-section h4 {
@@ -210,12 +245,13 @@
     position: static;
     width: auto;
     margin: 12px;
+    max-height: none;
+    border-radius: 10px;
   }
 
-  .map-sidebar {
-    position: static;
-    width: auto;
-    margin: 12px;
+  .map-sidebar-summary {
+    grid-template-columns: 1fr;
+    text-align: left;
   }
 
   .metric-tooltip h3 {

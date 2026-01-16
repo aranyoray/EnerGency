@@ -15,12 +15,10 @@ interface LayerControlsProps {
 
 const LayerControls = ({ layers, onLayerToggle, featuredLayerIds = [] }: LayerControlsProps) => {
   const [collapsed, setCollapsed] = useState(false)
-  const [showAll, setShowAll] = useState(false)
-  const featuredLayers = layers.filter(layer => featuredLayerIds.includes(layer.id))
-  const standardLayers = layers.filter(layer => !featuredLayerIds.includes(layer.id))
-  const coreLayerLimit = 6
-  const visibleStandardLayers = showAll ? standardLayers : standardLayers.slice(0, coreLayerLimit)
-  const hiddenLayerCount = Math.max(standardLayers.length - visibleStandardLayers.length, 0)
+  const [emergencyOpen, setEmergencyOpen] = useState(true)
+  const [energyOpen, setEnergyOpen] = useState(true)
+  const emergencyLayers = layers.filter(layer => layer.category !== 'energy')
+  const energyLayers = layers.filter(layer => layer.category === 'energy')
   const layerDescriptions: Record<string, string> = {
     'county-choropleth': 'Baseline readiness pressure by county.',
     'forecast-pressure': 'AI-assisted outlook using seasonal + trend signals through 2050.',
@@ -39,6 +37,26 @@ const LayerControls = ({ layers, onLayerToggle, featuredLayerIds = [] }: LayerCo
     'top-stressed': 'Highest priority counties for immediate action.'
   }
 
+  const renderLayer = (layer: MapLayerConfig) => (
+    <label key={layer.id} className="layer-control-item">
+      <input
+        type="checkbox"
+        checked={layer.enabled}
+        onChange={(e) => onLayerToggle(layer.id, e.target.checked)}
+      />
+      <span className="layer-name">{layer.name}</span>
+      <span className="layer-info-icon" title={layerDescriptions[layer.id] || 'Layer details'}>
+        i
+      </span>
+      {layer.color && (
+        <span
+          className="layer-color-indicator"
+          style={{ backgroundColor: layer.color }}
+        />
+      )}
+    </label>
+  )
+
   return (
     <div className="layer-controls">
       <div className="layer-controls-header" onClick={() => setCollapsed(!collapsed)}>
@@ -50,60 +68,56 @@ const LayerControls = ({ layers, onLayerToggle, featuredLayerIds = [] }: LayerCo
 
       {!collapsed && (
         <div className="layer-controls-content">
-          {featuredLayers.length > 0 && (
-            <div className="layer-controls-section">
-              <div className="layer-controls-title">2050 Overlays</div>
-              {featuredLayers.map(layer => (
-                <label key={layer.id} className="layer-control-item">
-                  <input
-                    type="checkbox"
-                    checked={layer.enabled}
-                    onChange={(e) => onLayerToggle(layer.id, e.target.checked)}
-                  />
-                  <span className="layer-name">{layer.name}</span>
-                  <span className="layer-info-icon" title={layerDescriptions[layer.id] || 'Layer details'}>
-                    i
-                  </span>
-                  {layer.color && (
-                    <span
-                      className="layer-color-indicator"
-                      style={{ backgroundColor: layer.color }}
-                    />
-                  )}
-                </label>
-              ))}
-            </div>
-          )}
           <div className="layer-controls-section">
-            {visibleStandardLayers.map(layer => (
-              <label key={layer.id} className="layer-control-item">
-                <input
-                  type="checkbox"
-                  checked={layer.enabled}
-                  onChange={(e) => onLayerToggle(layer.id, e.target.checked)}
-                />
-                <span className="layer-name">{layer.name}</span>
-                <span className="layer-info-icon" title={layerDescriptions[layer.id] || 'Layer details'}>
-                  i
-                </span>
-                {layer.color && (
-                  <span
-                    className="layer-color-indicator"
-                    style={{ backgroundColor: layer.color }}
-                  />
-                )}
-              </label>
-            ))}
-            {hiddenLayerCount > 0 && (
-              <button
-                type="button"
-                className="layer-controls-toggle"
-                onClick={() => setShowAll(prev => !prev)}
-              >
-                {showAll ? 'Show fewer overlays' : `Show ${hiddenLayerCount} more overlays`}
-              </button>
+            <button
+              type="button"
+              className="layer-controls-accordion"
+              onClick={() => setEmergencyOpen(prev => !prev)}
+            >
+              <span>Emergency metrics</span>
+              <span className="accordion-icon">{emergencyOpen ? '▲' : '▼'}</span>
+            </button>
+            {emergencyOpen && (
+              <div className="layer-controls-group">
+                {emergencyLayers.map(renderLayer)}
+                <div className="layer-controls-note">Emergency predictions</div>
+              </div>
             )}
           </div>
+
+          <div className="layer-controls-section">
+            <button
+              type="button"
+              className="layer-controls-accordion"
+              onClick={() => setEnergyOpen(prev => !prev)}
+            >
+              <span>Energy metrics</span>
+              <span className="accordion-icon">{energyOpen ? '▲' : '▼'}</span>
+            </button>
+            {energyOpen && (
+              <div className="layer-controls-group">
+                {energyLayers.map(renderLayer)}
+                <div className="layer-controls-note">Energy predictions</div>
+              </div>
+            )}
+          </div>
+          {featuredLayerIds.length > 0 && (
+            <div className="layer-controls-section">
+              <div className="layer-controls-title">Pinned overlays</div>
+              {layers.filter(layer => featuredLayerIds.includes(layer.id)).map(renderLayer)}
+            </div>
+          )}
+          {featuredLayerIds.length === 0 && energyLayers.length === 0 && (
+            <div className="layer-controls-section">
+              <button
+                type="button"
+                className="layer-controls-empty"
+                disabled
+              >
+                No energy overlays available
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

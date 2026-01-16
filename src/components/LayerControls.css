@@ -33,19 +33,52 @@
 
 .layer-controls-content {
   padding: 8px;
-  max-height: 500px;
+  max-height: 520px;
   overflow-y: auto;
 }
 
 .layer-controls-section {
-  padding-bottom: 8px;
-  margin-bottom: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
   border-bottom: 1px solid #f1f5f9;
 }
 
 .layer-controls-section:last-child {
   border-bottom: none;
   margin-bottom: 0;
+}
+
+.layer-controls-accordion {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #1d4ed8;
+  cursor: pointer;
+}
+
+.layer-controls-accordion:hover {
+  background: #e2e8f0;
+}
+
+.accordion-icon {
+  font-size: 11px;
+  color: #475569;
+}
+
+.layer-controls-group {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .layer-controls-title {
@@ -73,6 +106,8 @@
 .layer-control-item input[type="checkbox"] {
   margin-right: 10px;
   cursor: pointer;
+  width: 14px;
+  height: 14px;
 }
 
 .layer-name {
@@ -105,19 +140,23 @@
   border: 1px solid #ddd;
 }
 
-.layer-controls-toggle {
-  width: 100%;
+.layer-controls-note {
   margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #eff6ff;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.layer-controls-empty {
+  width: 100%;
   padding: 8px 10px;
   border-radius: 6px;
-  border: 1px dashed #94a3b8;
+  border: 1px dashed #cbd5f5;
   background: #f8fafc;
   font-size: 12px;
   font-weight: 600;
-  color: #1e293b;
-  cursor: pointer;
-}
-
-.layer-controls-toggle:hover {
-  background: #e2e8f0;
+  color: #64748b;
 }

@@ -108,6 +108,7 @@ export interface MapLayerConfig {
   dataKey: keyof EmergencyMetrics
   color?: string
   icon?: string
+  category?: 'emergency' | 'energy'
 }
 
 export interface TimeSeriesData {

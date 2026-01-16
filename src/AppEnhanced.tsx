@@ -3,7 +3,7 @@
  * Interactive map with disaster preparedness metrics and energy management insights
  */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import RealMapView from './components/RealMapView'
 import LayerControls from './components/LayerControls'
 import { MapLayerConfig } from './types/emergencyMetrics'
@@ -19,6 +19,7 @@ function AppEnhanced() {
   const [currentDate, setCurrentDate] = useState(new Date(2030, 0, 1))
   const [isPlaying, setIsPlaying] = useState(false)
   const [showDemoSteps, setShowDemoSteps] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const [layers, setLayers] = useState<MapLayerConfig[]>([
     {
       id: 'county-choropleth',
@@ -26,7 +27,8 @@ function AppEnhanced() {
       enabled: true,
       type: 'choropleth',
       dataKey: 'overallStressScore',
-      color: '#b91c1c'
+      color: '#b91c1c',
+      category: 'emergency'
     },
     {
       id: 'forecast-pressure',
@@ -34,7 +36,8 @@ function AppEnhanced() {
       enabled: false,
       type: 'choropleth',
       dataKey: 'overallStressScore',
-      color: '#1d4ed8'
+      color: '#1d4ed8',
+      category: 'emergency'
     },
     {
       id: 'disaster-stress',
@@ -42,7 +45,8 @@ function AppEnhanced() {
       enabled: false,
       type: 'choropleth',
       dataKey: 'disasterStressScore',
-      color: '#f97316'
+      color: '#f97316',
+      category: 'emergency'
     },
     {
       id: 'energy-reliability',
@@ -51,7 +55,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'energyStressScore',
       color: '#2563eb',
-      icon: '⚡'
+      icon: '⚡',
+      category: 'energy'
     },
     {
       id: 'recovery-needs',
@@ -60,7 +65,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'disasterStressScore',
       color: '#f97316',
-      icon: '🛠️'
+      icon: '🛠️',
+      category: 'emergency'
     },
     {
       id: 'infrastructure-priority',
@@ -69,7 +75,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#7c3aed',
-      icon: '🏥'
+      icon: '🏥',
+      category: 'emergency'
     },
     {
       id: 'county-pricing',
@@ -78,7 +85,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#0f766e',
-      icon: '💵'
+      icon: '💵',
+      category: 'energy'
     },
     {
       id: 'manufacturing-hubs',
@@ -87,7 +95,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'energyStressScore',
       color: '#0f172a',
-      icon: '🏭'
+      icon: '🏭',
+      category: 'energy'
     },
     {
       id: 'agriculture-supply',
@@ -96,7 +105,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'disasterStressScore',
       color: '#16a34a',
-      icon: '🌾'
+      icon: '🌾',
+      category: 'emergency'
     },
     {
       id: 'water-systems',
@@ -105,7 +115,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'disasterStressScore',
       color: '#0284c7',
-      icon: '💧'
+      icon: '💧',
+      category: 'emergency'
     },
     {
       id: 'first-responders',
@@ -114,7 +125,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#7c3aed',
-      icon: '🚓'
+      icon: '🚓',
+      category: 'emergency'
     },
     {
       id: 'new-projects',
@@ -123,7 +135,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#facc15',
-      icon: '💡'
+      icon: '💡',
+      category: 'energy'
     },
     {
       id: 'storage-sites',
@@ -132,7 +145,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#22c55e',
-      icon: '🔋'
+      icon: '🔋',
+      category: 'energy'
     },
     {
       id: 'nightlight-points',
@@ -140,7 +154,8 @@ function AppEnhanced() {
       enabled: false,
       type: 'symbols',
       dataKey: 'isTopStressed',
-      color: '#38bdf8'
+      color: '#38bdf8',
+      category: 'energy'
     },
     {
       id: 'top-stressed',
@@ -149,7 +164,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'isTopStressed',
       color: '#b91c1c',
-      icon: '⚠️'
+      icon: '⚠️',
+      category: 'emergency'
     }
   ])
 
@@ -192,6 +208,14 @@ function AppEnhanced() {
     return '#1d4ed8'
   }
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 768px)')
+    const handleChange = () => setIsMobile(mediaQuery.matches)
+    handleChange()
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
   return (
     <div className="app">
       <header className="app-header-enhanced">
@@ -224,6 +248,21 @@ function AppEnhanced() {
             </div>
           )}
         </div>
+        {!isMobile && (
+          <div className="header-timeline">
+            <div className="header-timeline-label">AI Timeline to 2035</div>
+            <TimeSlider
+              minDate={new Date(2020, 0, 1)}
+              maxDate={new Date(2035, 11, 31)}
+              currentDate={currentDate}
+              onDateChange={setCurrentDate}
+              isPlaying={isPlaying}
+              onPlayToggle={setIsPlaying}
+              stepSize="month"
+              className="time-slider--inline"
+            />
+          </div>
+        )}
         <div className="header-controls">
           <div className="control-group">
             <label>Geographic Level:</label>
@@ -275,7 +314,7 @@ function AppEnhanced() {
               <ol className="usage-list demo-list">
                 <li>Pick a state and a level at the top.</li>
                 <li>Turn on the 2050 overlays 💡 and 🔋.</li>
-                <li>Slide the AI timeline to 2050.</li>
+                <li>Slide the AI timeline to 2035.</li>
                 <li>Click a county to see forecasts + readiness notes.</li>
               </ol>
             )}
@@ -301,27 +340,6 @@ function AppEnhanced() {
             <LayerControls
               layers={layers}
               onLayerToggle={handleLayerToggle}
-              featuredLayerIds={['new-projects', 'storage-sites']}
-            />
-          </div>
-
-          <div className="info-card">
-            <h3>
-              🗓️ AI Timeline to 2050
-              <span className="info-icon" title="Move the slider to simulate future readiness conditions.">i</span>
-            </h3>
-            <p>
-              This timeline projects readiness pressure, pricing signals, and investment needs through 2050.
-              Move the slider or hit play to watch the AI forecast evolve.
-            </p>
-            <TimeSlider
-              minDate={new Date(2020, 0, 1)}
-              maxDate={new Date(2050, 11, 31)}
-              currentDate={currentDate}
-              onDateChange={setCurrentDate}
-              isPlaying={isPlaying}
-              onPlayToggle={setIsPlaying}
-              stepSize="month"
             />
           </div>
 
@@ -430,7 +448,7 @@ function AppEnhanced() {
             <ul className="usage-list">
               <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
               <li>Hover over areas to see detailed metrics</li>
-              <li>Use the <strong>AI timeline</strong> to view 2050 projections</li>
+              <li>Use the <strong>AI timeline</strong> to view 2035 projections</li>
               <li>⚠️ symbols mark priority action areas</li>
               <li>Color intensity shows readiness severity</li>
             </ul>
@@ -482,6 +500,21 @@ function AppEnhanced() {
             layers={layers}
             currentDate={currentDate}
           />
+          {isMobile && (
+            <div className="timeline-mobile">
+              <div className="timeline-mobile-label">AI Timeline to 2035</div>
+              <TimeSlider
+                minDate={new Date(2020, 0, 1)}
+                maxDate={new Date(2035, 11, 31)}
+                currentDate={currentDate}
+                onDateChange={setCurrentDate}
+                isPlaying={isPlaying}
+                onPlayToggle={setIsPlaying}
+                stepSize="month"
+                className="time-slider--inline"
+              />
+            </div>
+          )}
         </div>
       </div>
 

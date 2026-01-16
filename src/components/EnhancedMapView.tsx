@@ -31,7 +31,8 @@ const EnhancedMapView = ({ geoLevel, selectedState }: EnhancedMapViewProps) => {
       enabled: true,
       type: 'choropleth',
       dataKey: 'overallStressScore',
-      color: '#ff6b6b'
+      color: '#ff6b6b',
+      category: 'emergency'
     },
     {
       id: 'disaster-events',
@@ -40,7 +41,8 @@ const EnhancedMapView = ({ geoLevel, selectedState }: EnhancedMapViewProps) => {
       type: 'symbols',
       dataKey: 'stormEventsCount',
       color: '#ff922b',
-      icon: '🌪️'
+      icon: '🌪️',
+      category: 'emergency'
     },
     {
       id: 'cooling-costs',
@@ -48,7 +50,8 @@ const EnhancedMapView = ({ geoLevel, selectedState }: EnhancedMapViewProps) => {
       enabled: false,
       type: 'choropleth',
       dataKey: 'coolingCosts',
-      color: '#ff6b6b'
+      color: '#ff6b6b',
+      category: 'energy'
     },
     {
       id: 'heating-costs',
@@ -56,7 +59,8 @@ const EnhancedMapView = ({ geoLevel, selectedState }: EnhancedMapViewProps) => {
       enabled: false,
       type: 'choropleth',
       dataKey: 'heatingCosts',
-      color: '#4dabf7'
+      color: '#4dabf7',
+      category: 'energy'
     },
     {
       id: 'energy-burden',
@@ -64,7 +68,8 @@ const EnhancedMapView = ({ geoLevel, selectedState }: EnhancedMapViewProps) => {
       enabled: false,
       type: 'choropleth',
       dataKey: 'totalEnergyBurden',
-      color: '#f59f00'
+      color: '#f59f00',
+      category: 'energy'
     },
     {
       id: 'migration-stress',
@@ -72,7 +77,8 @@ const EnhancedMapView = ({ geoLevel, selectedState }: EnhancedMapViewProps) => {
       enabled: false,
       type: 'choropleth',
       dataKey: 'migrationStressScore',
-      color: '#845ef7'
+      color: '#845ef7',
+      category: 'emergency'
     },
     {
       id: 'top-stressed',
@@ -81,7 +87,8 @@ const EnhancedMapView = ({ geoLevel, selectedState }: EnhancedMapViewProps) => {
       type: 'symbols',
       dataKey: 'isTopStressed',
       color: '#e03131',
-      icon: '⚠️'
+      icon: '⚠️',
+      category: 'emergency'
     }
   ])
 
@@ -233,7 +240,7 @@ const EnhancedMapView = ({ geoLevel, selectedState }: EnhancedMapViewProps) => {
           <CircleMarker
             key={`${metric.geoid}-${idx}`}
             center={[metric.latitude, metric.longitude]}
-            radius={geoLevel === 'state' ? 15 : geoLevel === 'county' ? 8 : 5}
+            radius={geoLevel === 'state' ? 7 : geoLevel === 'county' ? 4 : 3}
             pathOptions={styleFeature(metric)}
           >
             <Tooltip>
@@ -247,7 +254,7 @@ const EnhancedMapView = ({ geoLevel, selectedState }: EnhancedMapViewProps) => {
           <CircleMarker
             key={`stressed-${metric.geoid}-${idx}`}
             center={[metric.latitude, metric.longitude]}
-            radius={10}
+            radius={5}
             pathOptions={{
               fillColor: '#e03131',
               color: '#c92a2a',
