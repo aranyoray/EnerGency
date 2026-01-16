@@ -18,6 +18,7 @@ function AppEnhanced() {
   const [selectedState, setSelectedState] = useState<string | undefined>(undefined)
   const [currentDate, setCurrentDate] = useState(new Date(2030, 0, 1))
   const [isPlaying, setIsPlaying] = useState(false)
+  const [showDemoSteps, setShowDemoSteps] = useState(true)
   const [layers, setLayers] = useState<MapLayerConfig[]>([
     {
       id: 'county-choropleth',
@@ -257,15 +258,43 @@ function AppEnhanced() {
         <div className="info-panel">
           <div className="info-card">
             <h3>
-              ▶️ Quick Demo Tour
-              <span className="info-icon" title="Follow these steps for a guided walkthrough.">i</span>
+              🚀 First-Time Demo
+              <span className="info-icon" title="Start here for a quick guided tour.">i</span>
             </h3>
-            <ol className="usage-list demo-list">
-              <li>Choose a state and geographic level above.</li>
-              <li>Turn on the 2050 overlays for projects 💡 and storage 🔋.</li>
-              <li>Slide the AI timeline to see 2050 projections.</li>
-              <li>Click a county to see forecast + readiness details.</li>
-            </ol>
+            <p className="demo-intro">
+              Welcome! Tap the button to follow the student-made walkthrough.
+            </p>
+            <button
+              type="button"
+              className="demo-button"
+              onClick={() => setShowDemoSteps(prev => !prev)}
+            >
+              {showDemoSteps ? 'Hide demo steps' : 'Show demo steps'}
+            </button>
+            {showDemoSteps && (
+              <ol className="usage-list demo-list">
+                <li>Pick a state and a level at the top.</li>
+                <li>Turn on the 2050 overlays 💡 and 🔋.</li>
+                <li>Slide the AI timeline to 2050.</li>
+                <li>Click a county to see forecasts + readiness notes.</li>
+              </ol>
+            )}
+          </div>
+
+          <div className="info-card">
+            <h3>
+              🔐 Login + Map Guide
+              <span className="info-icon" title="No account needed — start as a guest.">i</span>
+            </h3>
+            <p className="guide-line">
+              <span className="shake-emoji" role="img" aria-label="waving hello">👋</span>
+              Click <strong>Map Layers</strong> to turn features on, and use the <strong>AI timeline</strong> for the future view.
+            </p>
+            <div className="login-chip-row">
+              <span className="login-chip">Guest Pass ✅</span>
+              <span className="login-chip">Student View 🎒</span>
+              <span className="login-chip">City Planner 🗺️</span>
+            </div>
           </div>
 
           <div className="info-card">
@@ -298,6 +327,22 @@ function AppEnhanced() {
 
           <div className="info-card">
             <h3>
+              🤖 AI Model Studio (Student-Built)
+              <span className="info-icon" title="AI focus area and model lineup.">i</span>
+            </h3>
+            <p>
+              Our AI forecast engine is the centerpiece. It blends weather risk, grid stress, and
+              community data to make strong 2050-ready recommendations.
+            </p>
+            <ul className="metrics-list">
+              <li><strong>Models used:</strong> Gradient boosting, trend + seasonal forecasting, spatial clustering</li>
+              <li><strong>Signals:</strong> Disaster exposure, demand load, migration stability, infrastructure gaps</li>
+              <li><strong>Outputs:</strong> Readiness pressure, project placement, storage need score</li>
+            </ul>
+          </div>
+
+          <div className="info-card">
+            <h3>
               🧠 2050 Forecast & Recommendations
               <span className="info-icon" title="AI-assisted guidance for long-term investments.">i</span>
             </h3>
@@ -310,6 +355,20 @@ function AppEnhanced() {
 
           <div className="info-card">
             <h3>
+              📚 Datasets & Sources
+              <span className="info-icon" title="Public, transparent datasets used for AI training.">i</span>
+            </h3>
+            <ul className="sources-list">
+              <li>NOAA Storm Events Database</li>
+              <li>FEMA Disaster Declarations</li>
+              <li>U.S. Energy Information Administration (EIA)</li>
+              <li>U.S. Census Bureau Migration Data</li>
+              <li>DOE LEAD Tool + VIIRS Nighttime Lights</li>
+            </ul>
+          </div>
+
+          <div className="info-card">
+            <h3>
               📊 About This Dashboard
               <span className="info-icon" title="Designed for clear, common-sense planning.">i</span>
             </h3>
@@ -318,16 +377,6 @@ function AppEnhanced() {
               America. Measure disaster exposure, infrastructure strength, and energy
               independence to support local decision-making, fiscal discipline, and
               responsible stewardship.
-            </p>
-          </div>
-
-          <div className="info-card">
-            <h3>
-              👤 Project Lead
-              <span className="info-icon" title="Student-led civic technology initiative.">i</span>
-            </h3>
-            <p>
-              Ekaansh Ravuri, 16 | Chicago, IL
             </p>
           </div>
 
@@ -357,20 +406,6 @@ function AppEnhanced() {
             </p>
           </div>
 
-          <div className="info-card">
-            <h3>
-              🎯 How to Use
-              <span className="info-icon" title="Clear steps for first-time users.">i</span>
-            </h3>
-            <ul className="usage-list">
-              <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
-              <li>Hover over areas to see detailed metrics</li>
-              <li>Use the <strong>AI timeline</strong> to view 2050 projections</li>
-              <li>⚠️ symbols mark priority action areas</li>
-              <li>Color intensity shows readiness severity</li>
-            </ul>
-          </div>
-
           <div className="info-card stress-levels">
             <h3>⚡ Readiness Levels</h3>
             <div className="stress-level" style={{ borderLeft: '4px solid #1d4ed8' }}>
@@ -389,6 +424,20 @@ function AppEnhanced() {
 
           <div className="info-card">
             <h3>
+              🎯 How to Use
+              <span className="info-icon" title="Clear steps for first-time users.">i</span>
+            </h3>
+            <ul className="usage-list">
+              <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
+              <li>Hover over areas to see detailed metrics</li>
+              <li>Use the <strong>AI timeline</strong> to view 2050 projections</li>
+              <li>⚠️ symbols mark priority action areas</li>
+              <li>Color intensity shows readiness severity</li>
+            </ul>
+          </div>
+
+          <div className="info-card">
+            <h3>
               🏛️ Community Priorities
               <span className="info-icon" title="Focus on families, farms, and local jobs.">i</span>
             </h3>
@@ -400,18 +449,29 @@ function AppEnhanced() {
             </ul>
           </div>
 
-          <div className="info-card">
+          <div className="info-card faq-card">
             <h3>
-              📚 Data Sources
-              <span className="info-icon" title="All sources are public and transparent.">i</span>
+              ❓ FAQ
+              <span className="info-icon" title="Quick answers for first-time visitors.">i</span>
             </h3>
-            <ul className="sources-list">
-              <li>NOAA Storm Events Database</li>
-              <li>FEMA Disaster Declarations</li>
-              <li>U.S. Energy Information Administration (EIA)</li>
-              <li>U.S. Census Bureau Migration Data</li>
-              <li>Department of Energy (DOE) LEAD Tool</li>
-            </ul>
+            <dl className="faq-list">
+              <div>
+                <dt>How is the AI forecast built?</dt>
+                <dd>We combine disaster history, grid stress, and migration trends to model readiness pressure.</dd>
+              </div>
+              <div>
+                <dt>Is this a real-time tool?</dt>
+                <dd>It is a planning dashboard for preparedness, updated with public datasets.</dd>
+              </div>
+              <div>
+                <dt>Can I use it without an account?</dt>
+                <dd>Yes. Everyone can explore as a guest.</dd>
+              </div>
+              <div>
+                <dt>What should I click first?</dt>
+                <dd>Start with the AI timeline and 2050 overlays for a quick future-view demo.</dd>
+              </div>
+            </dl>
           </div>
         </div>
 
