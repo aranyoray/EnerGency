@@ -3,12 +3,11 @@
  * Interactive map with disaster preparedness metrics and energy management insights
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import RealMapView from './components/RealMapView'
 import LayerControls from './components/LayerControls'
 import { MapLayerConfig } from './types/emergencyMetrics'
 import TimeSlider from './components/TimeSlider'
-import AIModelsReport from './components/AIModelsReport'
 import './App.css'
 import './AppEnhanced.css'
 
@@ -17,12 +16,10 @@ export type GeographicLevel = 'census-tract' | 'zip-code' | 'county' | 'city' | 
 function AppEnhanced() {
   const [geoLevel, setGeoLevel] = useState<GeographicLevel>('county')
   const [selectedState, setSelectedState] = useState<string | undefined>(undefined)
-  const [currentDate, setCurrentDate] = useState(new Date(2015, 0, 1))
+  const [currentDate, setCurrentDate] = useState(new Date(2030, 0, 1))
   const [isPlaying, setIsPlaying] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [gpsPromptOpen, setGpsPromptOpen] = useState(true)
-  const [gpsStatus, setGpsStatus] = useState<string | null>(null)
-  const [currentPath, setCurrentPath] = useState(window.location.pathname)
+  const [showDemoSteps, setShowDemoSteps] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const [layers, setLayers] = useState<MapLayerConfig[]>([
     {
       id: 'county-choropleth',
@@ -30,15 +27,17 @@ function AppEnhanced() {
       enabled: true,
       type: 'choropleth',
       dataKey: 'overallStressScore',
-      color: '#b91c1c'
+      color: '#b91c1c',
+      category: 'emergency'
     },
     {
       id: 'forecast-pressure',
-      name: 'AI Forecast (2000-2035 Outlook)',
+      name: 'AI Forecast (2020-2050 Outlook)',
       enabled: false,
       type: 'choropleth',
       dataKey: 'overallStressScore',
-      color: '#1d4ed8'
+      color: '#1d4ed8',
+      category: 'emergency'
     },
     {
       id: 'disaster-stress',
@@ -46,7 +45,8 @@ function AppEnhanced() {
       enabled: false,
       type: 'choropleth',
       dataKey: 'disasterStressScore',
-      color: '#f97316'
+      color: '#f97316',
+      category: 'emergency'
     },
     {
       id: 'energy-reliability',
@@ -55,7 +55,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'energyStressScore',
       color: '#2563eb',
-      icon: '⚡'
+      icon: '⚡',
+      category: 'energy'
     },
     {
       id: 'recovery-needs',
@@ -64,7 +65,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'disasterStressScore',
       color: '#f97316',
-      icon: '🛠️'
+      icon: '🛠️',
+      category: 'emergency'
     },
     {
       id: 'infrastructure-priority',
@@ -73,7 +75,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#7c3aed',
-      icon: '🏥'
+      icon: '🏥',
+      category: 'emergency'
     },
     {
       id: 'county-pricing',
@@ -82,7 +85,84 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#0f766e',
-      icon: '💵'
+      icon: '💵',
+      category: 'energy'
+    },
+    {
+      id: 'manufacturing-hubs',
+      name: 'Manufacturing & Data Center Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'energyStressScore',
+      color: '#0f172a',
+      icon: '🏭',
+      category: 'energy'
+    },
+    {
+      id: 'agriculture-supply',
+      name: 'Agriculture & Food Supply Chains',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#16a34a',
+      icon: '🌾',
+      category: 'emergency'
+    },
+    {
+      id: 'water-systems',
+      name: 'Water System Reliability Risks',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#0284c7',
+      icon: '💧',
+      category: 'emergency'
+    },
+    {
+      id: 'first-responders',
+      name: 'First Responder & Hospital Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#7c3aed',
+      icon: '🚓',
+      category: 'emergency'
+    },
+    {
+      id: 'manufacturing-hubs',
+      name: 'Manufacturing & Data Center Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'energyStressScore',
+      color: '#0f172a',
+      icon: '🏭'
+    },
+    {
+      id: 'agriculture-supply',
+      name: 'Agriculture & Food Supply Chains',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#16a34a',
+      icon: '🌾'
+    },
+    {
+      id: 'water-systems',
+      name: 'Water System Reliability Risks',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#0284c7',
+      icon: '💧'
+    },
+    {
+      id: 'first-responders',
+      name: 'First Responder & Hospital Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#7c3aed',
+      icon: '🚓'
     },
     {
       id: 'manufacturing-hubs',
@@ -122,21 +202,23 @@ function AppEnhanced() {
     },
     {
       id: 'new-projects',
-      name: '2035 New Energy Projects ⚡',
+      name: '2050 New Energy Projects 💡',
       enabled: false,
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#facc15',
-      icon: '⚡'
+      icon: '💡',
+      category: 'energy'
     },
     {
       id: 'storage-sites',
-      name: '2035 Storage Sites 🔋',
+      name: '2050 Storage Sites 🔋',
       enabled: false,
       type: 'symbols',
       dataKey: 'overallStressScore',
       color: '#22c55e',
-      icon: '🔋'
+      icon: '🔋',
+      category: 'energy'
     },
     {
       id: 'nightlight-points',
@@ -144,7 +226,8 @@ function AppEnhanced() {
       enabled: false,
       type: 'symbols',
       dataKey: 'isTopStressed',
-      color: '#38bdf8'
+      color: '#38bdf8',
+      category: 'energy'
     },
     {
       id: 'top-stressed',
@@ -153,7 +236,8 @@ function AppEnhanced() {
       type: 'symbols',
       dataKey: 'isTopStressed',
       color: '#b91c1c',
-      icon: '⚠️'
+      icon: '⚠️',
+      category: 'emergency'
     }
   ])
 
@@ -180,66 +264,6 @@ function AppEnhanced() {
   ]
 
   const activeChoroplethLayer = layers.find(layer => layer.enabled && layer.type === 'choropleth')
-  const stateOptions = useMemo(() => states.filter(state => state !== 'All States'), [states])
-
-  useEffect(() => {
-    const handlePopState = () => setCurrentPath(window.location.pathname)
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
-  }, [])
-
-  const normalizeText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
-
-  const fuzzyScore = (query: string, candidate: string) => {
-    const normalizedQuery = normalizeText(query)
-    const normalizedCandidate = normalizeText(candidate)
-    if (!normalizedQuery) return 0
-    if (normalizedCandidate.includes(normalizedQuery)) {
-      return normalizedQuery.length / normalizedCandidate.length + 1
-    }
-    let score = 0
-    let queryIndex = 0
-    for (const char of normalizedCandidate) {
-      if (char === normalizedQuery[queryIndex]) {
-        score += 1
-        queryIndex += 1
-      }
-      if (queryIndex >= normalizedQuery.length) break
-    }
-    return score / normalizedCandidate.length
-  }
-
-  const bestStateMatch = useMemo(() => {
-    if (!searchQuery.trim()) return null
-    const scored = stateOptions
-      .map(state => ({ state, score: fuzzyScore(searchQuery, state) }))
-      .sort((a, b) => b.score - a.score)
-    return scored[0]?.score ? scored[0].state : null
-  }, [searchQuery, stateOptions])
-
-  const handleSearchSubmit = () => {
-    if (bestStateMatch) {
-      setSelectedState(bestStateMatch)
-    }
-  }
-
-  const handleGpsLookup = () => {
-    if (!navigator.geolocation) {
-      setGpsStatus('GPS not supported in this browser.')
-      return
-    }
-    setGpsStatus('Locating...')
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        const { latitude, longitude } = position.coords
-        setGpsStatus(`GPS locked at ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`)
-      },
-      () => {
-        setGpsStatus('Unable to access GPS. You can still search by location.')
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    )
-  }
 
   const getLegendColor = (value: number, layerId?: string) => {
     if (layerId === 'forecast-pressure') {
@@ -255,6 +279,14 @@ function AppEnhanced() {
     if (value >= 20) return '#93c5fd'
     return '#1d4ed8'
   }
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 768px)')
+    const handleChange = () => setIsMobile(mediaQuery.matches)
+    handleChange()
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
 
   return (
     <div className="app">
@@ -292,6 +324,21 @@ function AppEnhanced() {
             </div>
           )}
         </div>
+        {!isMobile && (
+          <div className="header-timeline">
+            <div className="header-timeline-label">AI Timeline to 2035</div>
+            <TimeSlider
+              minDate={new Date(2020, 0, 1)}
+              maxDate={new Date(2035, 11, 31)}
+              currentDate={currentDate}
+              onDateChange={setCurrentDate}
+              isPlaying={isPlaying}
+              onPlayToggle={setIsPlaying}
+              stepSize="month"
+              className="time-slider--inline"
+            />
+          </div>
+        )}
         <div className="header-controls">
           <div className="control-group">
             <label>Geographic Level:</label>
@@ -383,35 +430,92 @@ function AppEnhanced() {
         <div className="info-panel">
           <div className="info-card">
             <h3>
-              ▶️ Quick Demo Tour
-              <span className="info-icon" title="Follow these steps for a guided walkthrough.">i</span>
+              🚀 First-Time Demo
+              <span className="info-icon" title="Start here for a quick guided tour.">i</span>
             </h3>
-            <ol className="usage-list demo-list">
-              <li>Choose a state and geographic level above.</li>
-              <li>Turn on the 2035 overlays for projects ⚡ and storage 🔋.</li>
-              <li>Slide the AI timeline to see 2000-2035 projections.</li>
-              <li>Click a county to see forecast + readiness details.</li>
-            </ol>
+            <p className="demo-intro">
+              Welcome! Tap the button to follow the student-made walkthrough.
+            </p>
+            <button
+              type="button"
+              className="demo-button"
+              onClick={() => setShowDemoSteps(prev => !prev)}
+            >
+              {showDemoSteps ? 'Hide demo steps' : 'Show demo steps'}
+            </button>
+            {showDemoSteps && (
+              <ol className="usage-list demo-list">
+                <li>Pick a state and a level at the top.</li>
+                <li>Turn on the 2050 overlays 💡 and 🔋.</li>
+                <li>Slide the AI timeline to 2035.</li>
+                <li>Click a county to see forecasts + readiness notes.</li>
+              </ol>
+            )}
+          </div>
+
+          <div className="info-card">
+            <h3>
+              🔐 Login + Map Guide
+              <span className="info-icon" title="No account needed — start as a guest.">i</span>
+            </h3>
+            <p className="guide-line">
+              <span className="shake-emoji" role="img" aria-label="waving hello">👋</span>
+              Click <strong>Map Layers</strong> to turn features on, and use the <strong>AI timeline</strong> for the future view.
+            </p>
+            <div className="login-chip-row">
+              <span className="login-chip">Guest Pass ✅</span>
+              <span className="login-chip">Student View 🎒</span>
+              <span className="login-chip">City Planner 🗺️</span>
+            </div>
           </div>
 
           <div className="info-card">
             <LayerControls
               layers={layers}
               onLayerToggle={handleLayerToggle}
-              featuredLayerIds={['new-projects', 'storage-sites']}
             />
           </div>
 
           <div className="info-card">
             <h3>
-              🧠 2035 Forecast & Recommendations
+              🤖 AI Model Studio (Student-Built)
+              <span className="info-icon" title="AI focus area and model lineup.">i</span>
+            </h3>
+            <p>
+              Our AI forecast engine is the centerpiece. It blends weather risk, grid stress, and
+              community data to make strong 2050-ready recommendations.
+            </p>
+            <ul className="metrics-list">
+              <li><strong>Models used:</strong> Gradient boosting, trend + seasonal forecasting, spatial clustering</li>
+              <li><strong>Signals:</strong> Disaster exposure, demand load, migration stability, infrastructure gaps</li>
+              <li><strong>Outputs:</strong> Readiness pressure, project placement, storage need score</li>
+            </ul>
+          </div>
+
+          <div className="info-card">
+            <h3>
+              🧠 2050 Forecast & Recommendations
               <span className="info-icon" title="AI-assisted guidance for long-term investments.">i</span>
             </h3>
             <p>
-              The forecast highlights counties that should prepare for new energy projects ⚡
+              The forecast highlights counties that should prepare for new energy projects 💡
               and disaster-ready storage 🔋. Recommendations prioritize energy independence,
               resilient supply chains, and protection for seniors, veterans, and critical services.
             </p>
+          </div>
+
+          <div className="info-card">
+            <h3>
+              📚 Datasets & Sources
+              <span className="info-icon" title="Public, transparent datasets used for AI training.">i</span>
+            </h3>
+            <ul className="sources-list">
+              <li>NOAA Storm Events Database</li>
+              <li>FEMA Disaster Declarations</li>
+              <li>U.S. Energy Information Administration (EIA)</li>
+              <li>U.S. Census Bureau Migration Data</li>
+              <li>DOE LEAD Tool + VIIRS Nighttime Lights</li>
+            </ul>
           </div>
 
           <div className="info-card">
@@ -424,16 +528,6 @@ function AppEnhanced() {
               America. Measure disaster exposure, infrastructure strength, and energy
               independence to support local decision-making, fiscal discipline, and
               responsible stewardship.
-            </p>
-          </div>
-
-          <div className="info-card">
-            <h3>
-              👤 Project Lead
-              <span className="info-icon" title="Student-led civic technology initiative.">i</span>
-            </h3>
-            <p>
-              Ekaansh Ravuri, 16 | Chicago, IL
             </p>
           </div>
 
@@ -463,20 +557,6 @@ function AppEnhanced() {
             </p>
           </div>
 
-          <div className="info-card">
-            <h3>
-              🎯 How to Use
-              <span className="info-icon" title="Clear steps for first-time users.">i</span>
-            </h3>
-            <ul className="usage-list">
-              <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
-              <li>Hover over areas to see detailed metrics</li>
-              <li>Use the <strong>AI timeline</strong> to view 2035 projections</li>
-              <li>⚠️ symbols mark priority action areas</li>
-              <li>Color intensity shows readiness severity</li>
-            </ul>
-          </div>
-
           <div className="info-card stress-levels">
             <h3>⚡ Readiness Levels</h3>
             <div className="stress-level" style={{ borderLeft: '4px solid #1d4ed8' }}>
@@ -495,6 +575,20 @@ function AppEnhanced() {
 
           <div className="info-card">
             <h3>
+              🎯 How to Use
+              <span className="info-icon" title="Clear steps for first-time users.">i</span>
+            </h3>
+            <ul className="usage-list">
+              <li>Toggle layers using the <strong>Map Layers</strong> panel</li>
+              <li>Hover over areas to see detailed metrics</li>
+              <li>Use the <strong>AI timeline</strong> to view 2035 projections</li>
+              <li>⚠️ symbols mark priority action areas</li>
+              <li>Color intensity shows readiness severity</li>
+            </ul>
+          </div>
+
+          <div className="info-card">
+            <h3>
               🏛️ Community Priorities
               <span className="info-icon" title="Focus on families, farms, and local jobs.">i</span>
             </h3>
@@ -506,18 +600,29 @@ function AppEnhanced() {
             </ul>
           </div>
 
-          <div className="info-card">
+          <div className="info-card faq-card">
             <h3>
-              📚 Data Sources
-              <span className="info-icon" title="All sources are public and transparent.">i</span>
+              ❓ FAQ
+              <span className="info-icon" title="Quick answers for first-time visitors.">i</span>
             </h3>
-            <ul className="sources-list">
-              <li>NOAA Storm Events Database</li>
-              <li>FEMA Disaster Declarations</li>
-              <li>U.S. Energy Information Administration (EIA)</li>
-              <li>U.S. Census Bureau Migration Data</li>
-              <li>Department of Energy (DOE) LEAD Tool</li>
-            </ul>
+            <dl className="faq-list">
+              <div>
+                <dt>How is the AI forecast built?</dt>
+                <dd>We combine disaster history, grid stress, and migration trends to model readiness pressure.</dd>
+              </div>
+              <div>
+                <dt>Is this a real-time tool?</dt>
+                <dd>It is a planning dashboard for preparedness, updated with public datasets.</dd>
+              </div>
+              <div>
+                <dt>Can I use it without an account?</dt>
+                <dd>Yes. Everyone can explore as a guest.</dd>
+              </div>
+              <div>
+                <dt>What should I click first?</dt>
+                <dd>Start with the AI timeline and 2050 overlays for a quick future-view demo.</dd>
+              </div>
+            </dl>
           </div>
         </div>
 
@@ -527,8 +632,22 @@ function AppEnhanced() {
             selectedState={selectedState}
             layers={layers}
             currentDate={currentDate}
-            searchQuery={searchQuery}
           />
+          {isMobile && (
+            <div className="timeline-mobile">
+              <div className="timeline-mobile-label">AI Timeline to 2035</div>
+              <TimeSlider
+                minDate={new Date(2020, 0, 1)}
+                maxDate={new Date(2035, 11, 31)}
+                currentDate={currentDate}
+                onDateChange={setCurrentDate}
+                isPlaying={isPlaying}
+                onPlayToggle={setIsPlaying}
+                stepSize="month"
+                className="time-slider--inline"
+              />
+            </div>
+          )}
         </div>
       </div>
 

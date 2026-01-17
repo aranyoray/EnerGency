@@ -13,6 +13,16 @@
   border: 1px solid rgba(15, 23, 42, 0.1);
 }
 
+.time-slider--inline {
+  position: static;
+  transform: none;
+  min-width: 280px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+  border-radius: 12px;
+}
+
 .time-slider-header {
   display: flex;
   align-items: center;

@@ -3,9 +3,8 @@
  * Uses real nighttime light data, county GeoJSON polygons, and FEMA disasters
  */
 
-import { useEffect, useMemo, useState } from 'react'
-import { MapContainer, TileLayer, GeoJSON, Tooltip, CircleMarker, Popup, useMap } from 'react-leaflet'
-import type { PathOptions } from 'leaflet'
+import { useEffect, useState } from 'react'
+import { MapContainer, TileLayer, GeoJSON, Tooltip, CircleMarker, Popup } from 'react-leaflet'
 import { MapLayerConfig } from '../types/emergencyMetrics'
 import {
   loadAllRealData,
@@ -21,22 +20,14 @@ interface RealMapViewProps {
   selectedState?: string
   layers: MapLayerConfig[]
   currentDate: Date
-  searchQuery: string
 }
 
-interface ZipPlaceholder {
-  id: string
-  county: EnrichedCountyData
-  coordinates: [number, number]
-}
-
-const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery }: RealMapViewProps) => {
+const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapViewProps) => {
   const [counties, setCounties] = useState<EnrichedCountyData[]>([])
   const [nightlightData, setNightlightData] = useState<NightlightFeature[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedCounty, setSelectedCounty] = useState<EnrichedCountyData | null>(null)
-  const [searchTarget, setSearchTarget] = useState<EnrichedCountyData | null>(null)
 
   // Load real data
   useEffect(() => {
@@ -177,26 +168,6 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
       color: '#ffffff',
       fillOpacity: 0.7
     }
-  }
-
-  const normalizedText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
-
-  const fuzzyScore = (query: string, candidate: string) => {
-    const normalizedQuery = normalizedText(query)
-    const normalizedCandidate = normalizedText(candidate)
-    if (!normalizedQuery) return 0
-    if (normalizedCandidate.includes(normalizedQuery)) {
-      return normalizedQuery.length / normalizedCandidate.length + 1
-    }
-    let score = 0
-    let queryIndex = 0
-    for (const char of normalizedCandidate) {
-      if (char === normalizedQuery[queryIndex]) {
-        score += 1
-        queryIndex += 1
-      }
-      if (queryIndex >= normalizedQuery.length) break
-    }
     return score / normalizedCandidate.length
   }
 
@@ -286,21 +257,31 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
     ? counties.filter(county => getForecastScore(county) >= 60 + yearFactor * 20)
     : []
   const pricingCounties = showCountyPricing
-    ? counties.filter(county => getForecastScore(county) >= 45 + yearFactor * 20)
+    ? counties.filter(county => getForecastScore(county) >= 55)
     : []
   const manufacturingCounties = showManufacturingHubs
-    ? counties.filter(county => county.properties.totalEnergyMW >= 700 + yearFactor * 200 || county.emergencyMetrics.energyStressScore >= 55 + yearFactor * 15)
+    ? counties.filter(county => county.properties.totalEnergyMW >= 800 || county.emergencyMetrics.energyStressScore >= 65)
     : []
   const agricultureCounties = showAgricultureSupply
     ? counties.filter(county =>
-        county.properties.totalPopulation <= 200000 && county.emergencyMetrics.disasterStressScore >= 35 + yearFactor * 15
+        county.properties.totalPopulation <= 150000 && county.emergencyMetrics.disasterStressScore >= 45
       )
     : []
   const waterSystemCounties = showWaterSystems
-    ? counties.filter(county => county.emergencyMetrics.disasterStressScore >= 45 + yearFactor * 15)
+    ? counties.filter(county => county.emergencyMetrics.disasterStressScore >= 55)
     : []
   const firstResponderCounties = showFirstResponders
     ? counties.filter(county => county.properties.totalPopulation >= 250000)
+    : []
+  const newProjectCounties = showNewProjects
+    ? counties.filter(county =>
+        getForecastScore(county) >= 70 || county.emergencyMetrics.energyStressScore >= 65
+      )
+    : []
+  const storageSiteCounties = showStorageSites
+    ? counties.filter(county =>
+        getForecastScore(county) >= 60 || county.emergencyMetrics.disasterStressScore >= 65
+      )
     : []
   const newProjectCounties = showNewProjects
     ? counties.filter(county =>
@@ -439,7 +420,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`nightlight-${idx}`}
               center={[lat, lon]}
-              radius={Math.max(2, location.properties.intensity * 8)}
+              radius={Math.max(1.5, location.properties.intensity * 3)}
               pathOptions={{
                 fillColor: '#38bdf8',
                 color: '#0ea5e9',
@@ -469,7 +450,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`stressed-${county.properties.fips}-${idx}`}
               center={center}
-              radius={8}
+              radius={4}
               pathOptions={{
                 fillColor: '#b91c1c',
                 color: '#7f1d1d',
@@ -520,7 +501,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`reliability-${county.properties.fips}-${idx}`}
               center={center}
-              radius={6}
+              radius={4}
               pathOptions={{
                 fillColor: '#2563eb',
                 color: '#1d4ed8',
@@ -549,7 +530,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`recovery-${county.properties.fips}-${idx}`}
               center={center}
-              radius={6}
+              radius={4}
               pathOptions={{
                 fillColor: '#f97316',
                 color: '#c2410c',
@@ -578,7 +559,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`infrastructure-${county.properties.fips}-${idx}`}
               center={center}
-              radius={6}
+              radius={4}
               pathOptions={{
                 fillColor: '#7c3aed',
                 color: '#5b21b6',
@@ -608,7 +589,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`forecast-${county.properties.fips}-${idx}`}
               center={center}
-              radius={9}
+              radius={4}
               pathOptions={{
                 fillColor: '#1d4ed8',
                 color: '#0f172a',
@@ -637,7 +618,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`pricing-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#0f766e',
                 color: '#115e59',
@@ -665,7 +646,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`manufacturing-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#0f172a',
                 color: '#1e293b',
@@ -693,7 +674,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`agriculture-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#16a34a',
                 color: '#15803d',
@@ -721,7 +702,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`water-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#0284c7',
                 color: '#0369a1',
@@ -749,7 +730,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`responders-${county.properties.fips}-${idx}`}
               center={center}
-              radius={7}
+              radius={4}
               pathOptions={{
                 fillColor: '#7c3aed',
                 color: '#5b21b6',
@@ -777,7 +758,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`projects-${county.properties.fips}-${idx}`}
               center={center}
-              radius={8}
+              radius={4}
               pathOptions={{
                 fillColor: '#facc15',
                 color: '#ca8a04',
@@ -787,7 +768,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             >
               <Popup>
                 <div className="stress-popup">
-                  <h3>⚡ 2035 New Energy Project</h3>
+                  <h3>💡 2050 New Energy Project</h3>
                   <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
                   <p>Forecast Score: {getForecastScore(county).toFixed(1)}/100</p>
                   <p>Action: Plan permits, grid tie-ins, and workforce readiness.</p>
@@ -805,7 +786,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <CircleMarker
               key={`storage-${county.properties.fips}-${idx}`}
               center={center}
-              radius={8}
+              radius={4}
               pathOptions={{
                 fillColor: '#22c55e',
                 color: '#15803d',
@@ -815,7 +796,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             >
               <Popup>
                 <div className="stress-popup">
-                  <h3>🔋 2035 Storage Site Candidate</h3>
+                  <h3>🔋 2050 Storage Site Candidate</h3>
                   <p><strong>{county.properties.name} County, {county.properties.state}</strong></p>
                   <p>Disaster Stress: {county.emergencyMetrics.disasterStressScore.toFixed(1)}/100</p>
                   <p>Action: Pair batteries with hospitals and shelters.</p>
@@ -841,14 +822,28 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
               ✕
             </button>
           </div>
+          <div className="map-sidebar-summary">
+            <div className="summary-item">
+              <span className="summary-label">Forecast</span>
+              <span className="summary-value">{getForecastScore(selectedCounty).toFixed(1)}</span>
+            </div>
+            <div className="summary-item">
+              <span className="summary-label">Stress level</span>
+              <span className="summary-value">{selectedCounty.emergencyMetrics.stressLevel}</span>
+            </div>
+            <div className="summary-item">
+              <span className="summary-label">Disasters</span>
+              <span className="summary-value">{selectedCounty.emergencyMetrics.disasterCount}</span>
+            </div>
+          </div>
           <div className="map-sidebar-section">
-            <h4>AI Forecast to 2035</h4>
+            <h4>Emergency predictions</h4>
             <p><strong>Forecast Score:</strong> {getForecastScore(selectedCounty).toFixed(1)}/100</p>
             <p><strong>Forecast Level:</strong> {getForecastLevel(getForecastScore(selectedCounty))}</p>
             <p><strong>Forecast Window:</strong> {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
           </div>
           <div className="map-sidebar-section">
-            <h4>County-Level Pricing Guidance</h4>
+            <h4>Energy predictions</h4>
             <p>
               {getForecastScore(selectedCounty) >= 75
                 ? 'Surge +20%: target large industrial loads and automated demand response.'
@@ -863,8 +858,8 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate, searchQuery
             <h4>2035 Readiness Investments</h4>
             <p>
               {getForecastScore(selectedCounty) >= 70
-                ? '⚡ New energy project recommended to strengthen local capacity.'
-                : '⚡ Monitor for future project pipeline opportunities.'}
+                ? '💡 New energy project recommended to strengthen local capacity.'
+                : '💡 Monitor for future project pipeline opportunities.'}
             </p>
             <p>
               {getForecastScore(selectedCounty) >= 60 || selectedCounty.emergencyMetrics.disasterStressScore >= 65
