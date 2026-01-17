@@ -129,6 +129,42 @@ function AppEnhanced() {
       category: 'emergency'
     },
     {
+      id: 'manufacturing-hubs',
+      name: 'Manufacturing & Data Center Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'energyStressScore',
+      color: '#0f172a',
+      icon: '🏭'
+    },
+    {
+      id: 'agriculture-supply',
+      name: 'Agriculture & Food Supply Chains',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#16a34a',
+      icon: '🌾'
+    },
+    {
+      id: 'water-systems',
+      name: 'Water System Reliability Risks',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#0284c7',
+      icon: '💧'
+    },
+    {
+      id: 'first-responders',
+      name: 'First Responder & Hospital Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#7c3aed',
+      icon: '🚓'
+    },
+    {
       id: 'new-projects',
       name: '2050 New Energy Projects 💡',
       enabled: false,
@@ -218,6 +254,10 @@ function AppEnhanced() {
 
   return (
     <div className="app">
+      {currentPath === '/AI-models' ? (
+        <AIModelsReport />
+      ) : (
+        <>
       <header className="app-header-enhanced">
         <div className="header-top">
           <div className="header-content">
@@ -290,8 +330,65 @@ function AppEnhanced() {
               ))}
             </select>
           </div>
+          <div className="control-group search-group">
+            <label>Location Search:</label>
+            <div className="search-input-group">
+              <input
+                className="search-input"
+                type="text"
+                placeholder="Search state or county"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearchSubmit()
+                  }
+                }}
+              />
+              <button className="search-button" onClick={handleSearchSubmit} type="button">
+                Go
+              </button>
+            </div>
+            {bestStateMatch && (
+              <div className="search-hint">Suggested state: {bestStateMatch}</div>
+            )}
+          </div>
+        </div>
+        <div className="header-timeline">
+          <div className="header-timeline-title">
+            🗓️ AI Timeline to 2035
+          </div>
+          <TimeSlider
+            minDate={new Date(2000, 0, 1)}
+            maxDate={new Date(2035, 11, 31)}
+            currentDate={currentDate}
+            onDateChange={setCurrentDate}
+            isPlaying={isPlaying}
+            onPlayToggle={setIsPlaying}
+            stepSize="month"
+          />
         </div>
       </header>
+
+      {gpsPromptOpen && (
+        <div className="gps-overlay">
+          <div className="gps-modal">
+            <h3>📍 Enable GPS for Local Alerts?</h3>
+            <p>
+              Get quicker county insights by sharing your location. You can also search by name instead.
+            </p>
+            {gpsStatus && <p className="gps-status">{gpsStatus}</p>}
+            <div className="gps-actions">
+              <button type="button" className="gps-primary" onClick={handleGpsLookup}>
+                Share Location
+              </button>
+              <button type="button" className="gps-secondary" onClick={() => setGpsPromptOpen(false)}>
+                Not Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="app-content-enhanced">
         <div className="info-panel">
@@ -521,9 +618,11 @@ function AppEnhanced() {
       <footer className="app-footer">
         <p>
           Built with transparent public data for local leaders and community members |{' '}
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          <a href="/AI-models">View AI Models Report</a>
         </p>
       </footer>
+        </>
+      )}
     </div>
   )
 }

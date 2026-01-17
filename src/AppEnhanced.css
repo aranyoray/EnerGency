@@ -1,7 +1,7 @@
 .app-header-enhanced {
   background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 55%, #b91c1c 100%);
   color: white;
-  padding: 20px 30px;
+  padding: 12px 24px;
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
   border-bottom: 3px solid #ffffff;
 }
@@ -21,14 +21,14 @@
 
 .header-content h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
 
 .header-subtitle {
   margin: 4px 0 0 0;
-  font-size: 14px;
+  font-size: 12px;
   opacity: 0.96;
   font-weight: 500;
 }
