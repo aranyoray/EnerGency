@@ -165,6 +165,42 @@ function AppEnhanced() {
       icon: '🚓'
     },
     {
+      id: 'manufacturing-hubs',
+      name: 'Manufacturing & Data Center Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'energyStressScore',
+      color: '#0f172a',
+      icon: '🏭'
+    },
+    {
+      id: 'agriculture-supply',
+      name: 'Agriculture & Food Supply Chains',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#16a34a',
+      icon: '🌾'
+    },
+    {
+      id: 'water-systems',
+      name: 'Water System Reliability Risks',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'disasterStressScore',
+      color: '#0284c7',
+      icon: '💧'
+    },
+    {
+      id: 'first-responders',
+      name: 'First Responder & Hospital Hubs',
+      enabled: false,
+      type: 'symbols',
+      dataKey: 'overallStressScore',
+      color: '#7c3aed',
+      icon: '🚓'
+    },
+    {
       id: 'new-projects',
       name: '2050 New Energy Projects 💡',
       enabled: false,

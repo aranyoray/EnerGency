@@ -130,7 +130,7 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
   }
 
   // Style function for county GeoJSON
-  const styleCounty = (feature: any) => {
+  const styleCounty = (feature: any): PathOptions => {
     if (!activeChoroplethLayer) {
       return {
         fillColor: '#cccccc',
@@ -283,6 +283,70 @@ const RealMapView = ({ geoLevel, selectedState, layers, currentDate }: RealMapVi
         getForecastScore(county) >= 60 || county.emergencyMetrics.disasterStressScore >= 65
       )
     : []
+  const newProjectCounties = showNewProjects
+    ? counties.filter(county =>
+        getForecastScore(county) >= 60 + yearFactor * 20 || county.emergencyMetrics.energyStressScore >= 55 + yearFactor * 15
+      )
+    : []
+  const storageSiteCounties = showStorageSites
+    ? counties.filter(county =>
+        getForecastScore(county) >= 50 + yearFactor * 20 || county.emergencyMetrics.disasterStressScore >= 55 + yearFactor * 15
+      )
+    : []
+
+  const zipPlaceholders = useMemo<ZipPlaceholder[]>(() => {
+    if (geoLevel !== 'zip-code') return []
+    return counties.flatMap(county => {
+      const centroid = getCountyCentroid(county)
+      if (!centroid) return []
+      const [lat, lon] = centroid
+      return Array.from({ length: 3 }).map((_, idx) => ({
+        id: `${county.properties.fips}-zip-${idx}`,
+        county,
+        coordinates: [lat + (idx - 1) * 0.08, lon + (idx - 1) * 0.08] as [number, number]
+      }))
+    })
+  }, [counties, geoLevel])
+
+  useEffect(() => {
+    if (!searchQuery.trim()) return
+    const bestMatch = [...counties]
+      .map(county => ({
+        county,
+        score: fuzzyScore(searchQuery, `${county.properties.name} ${county.properties.state}`)
+      }))
+      .sort((a, b) => b.score - a.score)[0]
+    if (bestMatch?.score && bestMatch.score > 0.15) {
+      setSearchTarget(bestMatch.county)
+      setSelectedCounty(bestMatch.county)
+    }
+  }, [searchQuery, counties])
+
+  const MapBehavior = () => {
+    const map = useMap()
+
+    useEffect(() => {
+      const baseZoom = selectedState ? 6 : 4
+      const zoomByLevel: Record<RealMapViewProps['geoLevel'], number> = {
+        state: baseZoom,
+        county: baseZoom,
+        city: baseZoom + 1,
+        'zip-code': baseZoom + 2,
+        'census-tract': baseZoom + 2
+      }
+      map.setZoom(zoomByLevel[geoLevel])
+    }, [geoLevel, selectedState, map])
+
+    useEffect(() => {
+      if (!searchTarget) return
+      const center = getCountyCentroid(searchTarget)
+      if (center) {
+        map.flyTo(center, Math.max(map.getZoom(), 6), { duration: 0.8 })
+      }
+    }, [searchTarget, map])
+
+    return null
+  }
 
   const getCountyCentroid = (county: EnrichedCountyData) => {
     const coords = county.geometry.coordinates[0]
